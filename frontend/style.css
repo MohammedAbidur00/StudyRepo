@@ -8,6 +8,11 @@ body {
     font-family: Arial;
 }
 
+.Wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
 .Top-Bar {
     position: fixed;
     display: flex;
@@ -73,6 +78,54 @@ body {
 
 .Top-Bar-Btns-Container::-webkit-scrollbar {
     display: none;
+}
+
+.Page-Content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 25px;
+    margin-top: 85px;
+}
+
+.Summary-Container {
+    border: black 1.5px solid;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 10px;
+    border-radius: 8px;
+    padding-top: 0;
+    padding-left: 0;
+    flex: 1 1 300px;
+    max-width: 800px;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+}
+
+.Sumary-Container-Label {
+    border: black 2px solid;
+    border-top: none;
+    border-left: none;
+    padding: 8px;
+    border-bottom-right-radius: 8px;
+    max-width: fit-content;
+    font-weight: bold;
+    text-decoration: wavy;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+}
+
+#analyticsSum {
+    flex: 2 1 500px;
+}
+
+.Summary-Content {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 5px;
+    margin-left: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
 }
 
 :focus {
