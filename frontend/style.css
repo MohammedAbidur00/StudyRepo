@@ -1,0 +1,80 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial;
+}
+
+.Top-Bar {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.Top-Bar-Header-Container, .Top-Bar-Btns-Container {
+    padding: 5px 7px;
+    border-bottom: black 2px solid;
+}
+
+.Top-Bar-Header-Container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.App-Label-Container {
+    justify-self: start;
+}
+
+.Header-Label-Btn {
+    border: black 1.5px solid;
+    border-radius: 4px;
+    background-color: white;
+    padding: 4px 6px;
+    font-weight: bold;
+}
+
+.Header-Home-Label-Container {
+    justify-self: center;
+}
+
+.Header-Home-Label-Container h1 {
+    font-size: 25px;
+}
+
+.Header-Current-User-Label-Container {
+    justify-self: right;
+}
+
+.Top-Bar-Btns-Container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: left;
+    gap: 5px;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.Top-Bar-Btn {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    background-color: white;
+    padding: 2px 10px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.Top-Bar-Btns-Container::-webkit-scrollbar {
+    display: none;
+}
+
+:focus {
+    outline: none;
+}
