@@ -9,49 +9,78 @@
 </head>
 <body>
     <div id="Wrapper" class="Wrapper">
-        <div class="Top-Bar">
-            <div class="Top-Bar-Header-Container">
-                <div class="App-Label-Container">
-                    <button class="Header-Label-Btn">STUDYREPO</button>
-                </div>
-                <div class="Header-Home-Label-Container">
-                    <h1>HOME</h1>
-                </div>
-                <div id="headerCurrentUserLabelContainer" class="Header-Current-User-Label-Container"></div>
+        <div id="loginPageWrapper" class="Login-Page-Wrapper">
+            <div class="Box-Label">
+                <h1>LOGIN</h1>
             </div>
-            <div class="Top-Bar-Btns-Container">
-                <button class="Top-Bar-Btn">STUDY BASES</button>
-                <button class="Top-Bar-Btn">SCHEDULE</button>
-                <button class="Top-Bar-Btn">DOCUMENTS</button>
-                <button class="Top-Bar-Btn">ANALYTICS</button>
-                <button class="Top-Bar-Btn">SETTINGS</button>
-                <button class="Top-Bar-Btn material-icons">star</button>
+            <div class="Inputs-Containers">
+                <input type="text" placeholder="Enter your username">
+                <input type="text" placeholder="Enter your password">
+            </div>
+            <div class="Inputs-Submit-Btn-Container">
+                <button class="Login-Button">LOGIN</button>
+                <p>don't have an account, <span id="goToRegisterBtn" class="Go-To-Register-Btn">register here</span></p>
             </div>
         </div>
-        <div class="Page-Content">
-            <div id="analyticsSum" class="Summary-Container">
-                <div class="Sumary-Container-Label">
-                    <p>ANALYTICS SUMMARY</p>
-                </div>
-                <div class="Summary-Content"></div>
+        <div id="registrationPageWrapper" class="Registration-Page-Wrapper Hide">
+            <div class="Box-Label">
+                <h1>REGISTER</h1>
             </div>
-            <div class="Summary-Container">
-                <div class="Sumary-Container-Label">
-                    <p>RECENT DOCUMENTS</p>
-                </div>
-                <div class="Summary-Content"></div>
+            <div class="Inputs-Containers">
+                <input type="text" placeholder="Enter a username">
+                <input type="text" placeholder="Enter a password">
+                <input type="text" placeholder="Re-type password">
             </div>
-            <div class="Summary-Container">
-                <div class="Sumary-Container-Label">
-                    <p>UPCOMING</p>
-                </div>
-                <div class="Summary-Content"></div>
+            <div class="Inputs-Submit-Btn-Container">
+                <button class="Register-Button">REGISTER</button>
+                <p>already have an account, <span id="goToLoginBtn" class="Go-To-Register-Btn">login here</span></p>
             </div>
-            <div id="recentStudyBasesSum" class="Summary-Container">
-                <div class="Sumary-Container-Label">
-                    <p>RECENT STUDY BASES</p>
+        </div>
+        <div id="homePageWrapper" class="Home-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button class="Header-Label-Btn">STUDYREPO</button>
+                    </div>
+                    <div class="Header-Home-Label-Container">
+                        <h1>HOME</h1>
+                    </div>
+                    <div id="headerCurrentUserLabelContainer" class="Header-Current-User-Label-Container"></div>
                 </div>
-                <div class="Summary-Content"></div>
+                <div class="Top-Bar-Btns-Container">
+                    <button class="Top-Bar-Btn">STUDY REPOS</button>
+                    <button class="Top-Bar-Btn">SCHEDULE</button>
+                    <button class="Top-Bar-Btn">DOCUMENTS</button>
+                    <button class="Top-Bar-Btn">ANALYTICS</button>
+                    <button class="Top-Bar-Btn">SETTINGS</button>
+                    <button class="Top-Bar-Btn material-icons">star</button>
+                </div>
+            </div>
+            <div class="Page-Content">
+                <div id="analyticsSum" class="Summary-Container">
+                    <div class="Sumary-Container-Label">
+                        <p>ANALYTICS SUMMARY</p>
+                    </div>
+                    <div class="Summary-Content"></div>
+                </div>
+                <div class="Summary-Container">
+                    <div class="Sumary-Container-Label">
+                        <p>RECENT DOCUMENTS</p>
+                    </div>
+                    <div class="Summary-Content"></div>
+                </div>
+                <div class="Summary-Container">
+                    <div class="Sumary-Container-Label">
+                        <p>UPCOMING</p>
+                    </div>
+                    <div class="Summary-Content"></div>
+                </div>
+                <div id="recentStudyBasesSum" class="Summary-Container">
+                    <div class="Sumary-Container-Label">
+                        <p>RECENT STUDY BASES</p>
+                    </div>
+                    <div class="Summary-Content"></div>
+                </div>
             </div>
         </div>
     </div>

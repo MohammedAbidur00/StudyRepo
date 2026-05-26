@@ -5,12 +5,81 @@
 }
 
 body {
-    font-family: Arial;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.Wrapper {
+.Home-Page-Wrapper {
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+}
+
+.Login-Page-Wrapper, .Registration-Page-Wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    height: 100vh;
+    gap: 10px;
+    overflow-x: hidden;
+}
+
+.Box-Label h1 {
+    font-size: 45px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.Inputs-Containers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.Inputs-Containers input {
+    border: black 2.5px solid;
+    border-radius: 6px;
+    background-color: white;
+    color: black;
+    font-size: 17px;
+    padding: 10px 15px;
+    width: 350px;
+}
+
+.Inputs-Submit-Btn-Container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.Inputs-Submit-Btn-Container button {
+    border: black 2px solid;
+    background-color: black;
+    color: white;
+    font-size: 15px;
+    padding: 11.5px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    width: 350px;
+}
+
+.Inputs-Submit-Btn-Container button:hover {
+    opacity: 0.8;
+}
+
+.Inputs-Submit-Btn-Container p {
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.Go-To-Register-Btn {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.Go-To-Register-Btn:hover {
+    text-decoration: underline;
 }
 
 .Top-Bar {
@@ -130,4 +199,18 @@ body {
 
 :focus {
     outline: none;
+}
+
+input[type="text"]::placeholder {
+    color: black;
+    font-weight: bold;
+}
+
+::selection {
+    background-color: black;
+    color: white;
+}
+
+.Hide {
+    display: none;
 }
