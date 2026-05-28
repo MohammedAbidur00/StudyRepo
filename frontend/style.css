@@ -42,7 +42,7 @@ body {
     border-radius: 6px;
     background-color: white;
     color: black;
-    font-size: 17px;
+    font-size: 15.5px;
     padding: 10px 15px;
     width: 350px;
 }
@@ -57,7 +57,7 @@ body {
     border: black 2px solid;
     background-color: black;
     color: white;
-    font-size: 15px;
+    font-size: 14px;
     padding: 11.5px 15px;
     border-radius: 6px;
     font-weight: bold;
@@ -70,7 +70,7 @@ body {
 
 .Inputs-Submit-Btn-Container p {
     font-family: monospace;
-    font-size: 12px;
+    font-size: 13.5px;
 }
 
 .Go-To-Register-Btn {
@@ -80,6 +80,15 @@ body {
 
 .Go-To-Register-Btn:hover {
     text-decoration: underline;
+}
+
+.Message-Box {
+    text-align: center;
+}
+
+.Message-Box p {
+    font-family: monospace;
+    font-weight: bold;
 }
 
 .Top-Bar {
@@ -201,7 +210,7 @@ body {
     outline: none;
 }
 
-input[type="text"]::placeholder {
+input[type="text"]::placeholder, input[type="password"]::placeholder, input[type="email"]::placeholder {
     color: black;
     font-weight: bold;
 }

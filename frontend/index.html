@@ -10,15 +10,17 @@
 <body>
     <div id="Wrapper" class="Wrapper">
         <div id="loginPageWrapper" class="Login-Page-Wrapper">
+            <div class="Moving-Box"></div>
             <div class="Box-Label">
                 <h1>LOGIN</h1>
             </div>
             <div class="Inputs-Containers">
-                <input type="text" placeholder="Enter your username">
-                <input type="text" placeholder="Enter your password">
+                <input id="emailInput" type="text" placeholder="Enter your email">
+                <input id="passwordInput" type="password" placeholder="Enter your password">
             </div>
+            <div id="loginPageMessageBox" class="Message-Box Hide"></div>
             <div class="Inputs-Submit-Btn-Container">
-                <button class="Login-Button">LOGIN</button>
+                <button id="loginButton" class="Login-Button">LOGIN</button>
                 <p>don't have an account, <span id="goToRegisterBtn" class="Go-To-Register-Btn">register here</span></p>
             </div>
         </div>
@@ -27,12 +29,14 @@
                 <h1>REGISTER</h1>
             </div>
             <div class="Inputs-Containers">
-                <input type="text" placeholder="Enter a username">
-                <input type="text" placeholder="Enter a password">
-                <input type="text" placeholder="Re-type password">
+                <input id="newUsername" type="text" placeholder="Enter a username">
+                <input id="newEmail" type="email" placeholder="Enter a email">
+                <input id="newPassword" type="password" placeholder="Enter a password">
+                <input id="newPaswordVerify" type="password" placeholder="Verify password">
             </div>
+            <div id="registerPageMessageBox" class="Message-Box Hide"></div>
             <div class="Inputs-Submit-Btn-Container">
-                <button class="Register-Button">REGISTER</button>
+                <button id="registerButton" class="Register-Button">REGISTER</button>
                 <p>already have an account, <span id="goToLoginBtn" class="Go-To-Register-Btn">login here</span></p>
             </div>
         </div>
