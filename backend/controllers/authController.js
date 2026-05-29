@@ -22,9 +22,30 @@ const register = async (req, res) => {
       [username, email, password_hash]
     )
 
-    res.status(201).json(result.rows[0])
+    const user = result.rows[0]
+
+    // create a token
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+    res.cookie('token', token, {
+      httpOnly: true,    // JS cannot access this cookie
+      secure: false,     // set to true in production (requires HTTPS)
+      sameSite: 'lax',  // protects against CSRF attacks
+      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days in milliseconds
+    })
+    
+    res.json({ message: 'Registered successfully', username: user.username })
   } catch (err) {
     console.error(err)
+
+    if (err.code === "23505") {
+        return res.status(409).json({ error: 'Email or username already exists'})
+    }
+
     res.status(500).json({ error: 'Something went wrong' })
   }
 }
@@ -65,11 +86,27 @@ const login = async (req, res) => {
       { expiresIn: '7d' }
     )
 
-    res.json({ token })
+    res.cookie('token', token, {
+      httpOnly: true,    // JS cannot access this cookie
+      secure: false,     // set to true in production (requires HTTPS)
+      sameSite: 'lax',  // protects against CSRF attacks
+      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days in milliseconds
+    })
+    
+    res.json({ message: 'Logged in successfully', username: user.username })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Something went wrong' })
   }
 }
 
-module.exports = { register, login }
+const getMe = (req, res) => {
+  res.json({ username: req.user.username, id: req.user.id })
+}
+
+const logout = (req, res) => {
+  res.clearCookie('token')
+  res.json({ message: 'Logged out' })
+}
+
+module.exports = { register, login, getMe, logout }

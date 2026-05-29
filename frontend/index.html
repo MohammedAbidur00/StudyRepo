@@ -44,9 +44,9 @@
             <div class="Top-Bar">
                 <div class="Top-Bar-Header-Container">
                     <div class="App-Label-Container">
-                        <button class="Header-Label-Btn">STUDYREPO</button>
+                        <button id="titlebtn" class="Header-Label-Btn">STUDYREPO</button>
                     </div>
-                    <div class="Header-Home-Label-Container">
+                    <div class="Header-Page-Label-Container">
                         <h1>HOME</h1>
                     </div>
                     <div id="headerCurrentUserLabelContainer" class="Header-Current-User-Label-Container"></div>
@@ -56,7 +56,7 @@
                     <button class="Top-Bar-Btn">SCHEDULE</button>
                     <button class="Top-Bar-Btn">DOCUMENTS</button>
                     <button class="Top-Bar-Btn">ANALYTICS</button>
-                    <button class="Top-Bar-Btn">SETTINGS</button>
+                    <button id="openSettingsBtn" class="Top-Bar-Btn">SETTINGS</button>
                     <button class="Top-Bar-Btn material-icons">star</button>
                 </div>
             </div>
@@ -84,6 +84,50 @@
                         <p>RECENT STUDY BASES</p>
                     </div>
                     <div class="Summary-Content"></div>
+                </div>
+            </div>
+        </div>
+        <div id="settingsPageWrapper" class="Settings-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="settingBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>SETTINGS</h1>
+                    </div>
+                </div>
+                <div class="Top-Bar-Btns-Container">
+                    <button class="Top-Bar-Btn">USER SETTINGS</button>
+                    <button class="Top-Bar-Btn">APP SETTINGS</button>
+                    <button id="logoutBtn" class="Top-Bar-Btn">LOGOUT</button>
+                    <button class="Top-Bar-Btn material-icons">star</button>
+                </div>
+            </div>
+            <div class="Settings-Page-Content">
+                <div class="Settings-Container">
+                    <div class="Setting-Container-Label">
+                        <p>ACCOUNT/PROFILE</p>
+                    </div>
+                    <div class="Setting-Content"></div>
+                </div>
+                <div class="Settings-Container">
+                    <div class="Setting-Container-Label">
+                        <p>SECURITY</p>
+                    </div>
+                    <div class="Setting-Content"></div>
+                </div>
+                <div class="Settings-Container">
+                    <div class="Setting-Container-Label">
+                        <p>PRIVACY</p>
+                    </div>
+                    <div class="Setting-Content"></div>
+                </div>
+                <div class="Settings-Container">
+                    <div class="Setting-Container-Label">
+                        <p>APPEARANCE</p>
+                    </div>
+                    <div class="Setting-Content"></div>
                 </div>
             </div>
         </div>

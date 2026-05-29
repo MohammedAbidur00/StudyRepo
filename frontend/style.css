@@ -2,13 +2,14 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    user-select: none;
 }
 
 body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.Home-Page-Wrapper {
+.Home-Page-Wrapper, .Settings-Page-Wrapper {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
@@ -112,6 +113,7 @@ body {
 
 .App-Label-Container {
     justify-self: start;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
 .Header-Label-Btn {
@@ -122,16 +124,17 @@ body {
     font-weight: bold;
 }
 
-.Header-Home-Label-Container {
+.Header-Page-Label-Container {
     justify-self: center;
 }
 
-.Header-Home-Label-Container h1 {
+.Header-Page-Label-Container h1 {
     font-size: 25px;
 }
 
 .Header-Current-User-Label-Container {
     justify-self: right;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
 .Top-Bar-Btns-Container {
@@ -143,6 +146,7 @@ body {
     overflow-x: scroll;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.28);
 }
 
 .Top-Bar-Btn {
@@ -152,6 +156,11 @@ body {
     padding: 2px 10px;
     font-weight: bold;
     white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.23);
+}
+
+.Top-Bar-Btn:hover {
+    opacity: 0.65;
 }
 
 .Top-Bar-Btns-Container::-webkit-scrollbar {
@@ -165,6 +174,14 @@ body {
     gap: 10px;
     padding: 25px;
     margin-top: 85px;
+}
+
+.Settings-Page-Content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+    margin-top: 85px;
+    padding: 25px;
+    gap: 10px;
 }
 
 .Summary-Container {
@@ -194,6 +211,40 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.35);
 }
 
+.Settings-Container {
+    border: black 1.5px solid;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 10px;
+    border-radius: 8px;
+    padding-top: 0;
+    padding-left: 0;
+    max-width: 800px;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+}
+
+.Setting-Container-Label {
+    border: black 2px solid;
+    border-top: none;
+    border-left: none;
+    padding: 8px;
+    border-bottom-right-radius: 8px;
+    max-width: fit-content;
+    font-weight: bold;
+    text-decoration: wavy;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+}
+
+.Setting-Content {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 5px;
+    margin-left: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+}
+
 #analyticsSum {
     flex: 2 1 500px;
 }
@@ -215,9 +266,8 @@ input[type="text"]::placeholder, input[type="password"]::placeholder, input[type
     font-weight: bold;
 }
 
-::selection {
-    background-color: black;
-    color: white;
+button {
+    cursor: pointer;
 }
 
 .Hide {

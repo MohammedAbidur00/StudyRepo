@@ -5,9 +5,14 @@ const pool = require('./db')
 const userRouter = require('./routes/users')
 const authRouter = require('./routes/auth')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:5500',
+    credentials: true
+}))
 app.use(express.json())
+app.use(cookieParser())
 app.use('/users', userRouter)
 app.use('/auth', authRouter)
 
