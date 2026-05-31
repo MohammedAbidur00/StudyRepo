@@ -52,7 +52,7 @@
                     <div id="headerCurrentUserLabelContainer" class="Header-Current-User-Label-Container"></div>
                 </div>
                 <div class="Top-Bar-Btns-Container">
-                    <button class="Top-Bar-Btn">STUDY REPOS</button>
+                    <button id="openStudyReposBtn" class="Top-Bar-Btn">STUDY REPOS</button>
                     <button class="Top-Bar-Btn">SCHEDULE</button>
                     <button class="Top-Bar-Btn">DOCUMENTS</button>
                     <button class="Top-Bar-Btn">ANALYTICS</button>
@@ -65,25 +65,31 @@
                     <div class="Sumary-Container-Label">
                         <p>ANALYTICS SUMMARY</p>
                     </div>
-                    <div class="Summary-Content"></div>
+                    <div class="Summary-Content">
+                        <p>No analytics summaries</p>
+                    </div>
                 </div>
                 <div class="Summary-Container">
                     <div class="Sumary-Container-Label">
                         <p>RECENT DOCUMENTS</p>
                     </div>
-                    <div class="Summary-Content"></div>
+                    <div class="Summary-Content">
+                        <p>No recent documents</p>
+                    </div>
                 </div>
                 <div class="Summary-Container">
                     <div class="Sumary-Container-Label">
                         <p>UPCOMING</p>
                     </div>
-                    <div class="Summary-Content"></div>
+                    <div class="Summary-Content">
+                        <p>Nothing upcoming</p>
+                    </div>
                 </div>
                 <div id="recentStudyBasesSum" class="Summary-Container">
                     <div class="Sumary-Container-Label">
-                        <p>RECENT STUDY BASES</p>
+                        <p>RECENT STUDY REPOS</p>
                     </div>
-                    <div class="Summary-Content"></div>
+                    <div id="recentStudyReposSummary" class="Summary-Content"></div>
                 </div>
             </div>
         </div>
@@ -128,6 +134,57 @@
                         <p>APPEARANCE</p>
                     </div>
                     <div class="Setting-Content"></div>
+                </div>
+            </div>
+        </div>
+        <div id="studyReposPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="studyReposBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>STUDYREPOS</h1>
+                    </div>
+                </div>
+                <div class="Top-Bar-Btns-Container">
+                    <button id="openCreateStudyRepoBtn" class="Top-Bar-Btn"> + CREATE STUDYREPO</button>
+                    <button class="Top-Bar-Btn">EDIT STUDYREPOS</button>
+                    <button class="Top-Bar-Btn material-icons">star</button>
+                </div>
+            </div>
+            <div id="studyRepoCardsContainer" class="Page-Content">
+                <div id="placeholderMessageCon" class="Hide">
+                    <p id="placeholderMessage" class="Placeholder-Message"></p>
+                </div>
+            </div>
+        </div>
+        <div id="createStudyRepoPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="createStudyRepoBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>CREATE STUDYREPO</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="Create-Study-Repo-Content">
+                <div class="Create-Repo-Inputs-Containers">
+                    <div class="Create-Repo-Inputs-Container">
+                        <p class="createRepoLabel">ENTER NAME</p>
+                        <input id="createRepoNameInput" class="createRepoNameInput" type="text" placeholder="Enter the name of the studyrepo.....">
+                    </div>
+                    <div class="Create-Repo-Inputs-Container">
+                        <p class="createRepoLabel">ENTER DESCRIPTION (OPTIONAL)</p>
+                        <textarea id="createRepoDescriptionInput" class="createRepoDescriptionInput" placeholder="Enter the description of the studyrepo....."></textarea>
+                    </div>
+                    <div id="createRepoPageMessageBox" class="Message-Box Hide"></div>
+                    <div class="Create-Repo-Btns-Container">
+                        <button id="saveRepoBtn">SAVE</button>
+                        <button id="cancelRepoBtn">CANCEL</button>
+                    </div>
                 </div>
             </div>
         </div>

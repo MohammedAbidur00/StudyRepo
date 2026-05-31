@@ -4,6 +4,7 @@ const app = express()
 const pool = require('./db')
 const userRouter = require('./routes/users')
 const authRouter = require('./routes/auth')
+const repoRouter = require('./routes/repos')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use('/users', userRouter)
 app.use('/auth', authRouter)
+app.use('/repos', repoRouter)
 
 app.use((req, res) => {
     res.status(404).json({ message: 'route not found'});

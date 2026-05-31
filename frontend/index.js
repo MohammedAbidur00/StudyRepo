@@ -3,6 +3,8 @@ const loginPageWrapper = document.getElementById("loginPageWrapper");
 const registrationPageWrapper = document.getElementById("registrationPageWrapper");
 const homePageWrapper = document.getElementById("homePageWrapper");
 const settingsPageWrapper = document.getElementById("settingsPageWrapper");
+const studyReposPageWrapper = document.getElementById("studyReposPageWrapper");
+const createStudyRepoPageWrapper = document.getElementById("createStudyRepoPageWrapper");
 
 const goToRegisterBtn = document.getElementById("goToRegisterBtn");
 const goToLoginBtn = document.getElementById("goToLoginBtn");
@@ -19,20 +21,76 @@ const newPaswordVerify = document.getElementById('newPaswordVerify');
 const loginButton = document.getElementById("loginButton");
 const registerButton = document.getElementById("registerButton");
 const openSettingsBtn = document.getElementById("openSettingsBtn");
+const openStudyReposBtn = document.getElementById("openStudyReposBtn");
+const openCreateStudyRepoBtn = document.getElementById("openCreateStudyRepoBtn");
 
 const settingBackBtn = document.getElementById("settingBackBtn");
+const studyReposBackBtn = document.getElementById("studyReposBackBtn");
+const createStudyRepoBackBtn = document.getElementById("createStudyRepoBackBtn");
 
 const loginPageMessageBox = document.getElementById("loginPageMessageBox");
 const registerPageMessageBox = document.getElementById("registerPageMessageBox");
 
-goToRegisterBtn.addEventListener("click", () => {
+const createRepoNameInput = document.getElementById("createRepoNameInput");
+const createRepoDescriptionInput = document.getElementById("createRepoDescriptionInput");
+const saveRepoBtn = document.getElementById("saveRepoBtn");
+const cancelRepoBtn = document.getElementById("cancelRepoBtn");
+const createRepoPageMessageBox = document.getElementById("createRepoPageMessageBox");
+
+const studyRepoCardsContainer = document.getElementById("studyRepoCardsContainer");
+
+const placeholderMessage = document.getElementById("placeholderMessage");
+const placeholderMessageCon = document.getElementById("placeholderMessageCon");
+
+class createStudyRepoCards {
+    constructor(repoName, repoDescription) {
+        this.repoName = repoName;
+        this.repoDescription = repoDescription;
+
+        this.repoCard = document.createElement("div");
+        this.repoCardLabelCon = document.createElement("div");
+        this.repoCardTitleCon = document.createElement("div");
+        this.repoCardDescriptionCon = document.createElement("div");
+
+        this.repoCardLabel = document.createElement("p");
+        this.repoCardTitle = document.createElement("h1");
+        this.repoCardDescriptionLabel = document.createElement("p");
+        this.repoCardDescription = document.createElement("p");
+
+        this.repoCardLabel.textContent = "STUDYREPO";
+        this.repoCardTitle.textContent = this.repoName;
+
+        if (this.repoDescription === "") {
+            this.repoCardDescription.textContent = "This StudyRepo does not have a description";
+        } else {
+            this.repoCardDescription.textContent = this.repoDescription
+        }
+
+        this.repoCard.classList.add("Study-Repo-Card");
+        this.repoCardLabelCon.classList.add("Sumary-Container-Label");
+        this.repoCardTitleCon.classList.add("Study-Repo-Card-Name-Container");
+        this.repoCardDescriptionCon.classList.add("Study-Repo-Card-Des-Container");
+
+        this.repoCardLabelCon.appendChild(this.repoCardLabel);
+        this.repoCardTitleCon.appendChild(this.repoCardTitle);
+        this.repoCardDescriptionCon.appendChild(this.repoCardDescription);
+
+        this.repoCard.appendChild(this.repoCardLabelCon);
+        this.repoCard.appendChild(this.repoCardTitleCon);
+        this.repoCard.appendChild(this.repoCardDescriptionCon);
+
+        studyRepoCardsContainer.appendChild(this.repoCard);
+    }
+}
+
+goToRegisterBtn.addEventListener("click", async () => {
     setCurrentPage("registerPage");
-    showCurrentPage()
+    await showCurrentPage()
 });
 
-goToLoginBtn.addEventListener("click", () => {
+goToLoginBtn.addEventListener("click", async () => {
     setCurrentPage("loginPage");
-    showCurrentPage();
+    await showCurrentPage();
 });
 
 logoutBtn.addEventListener("click", async () => {
@@ -40,14 +98,34 @@ logoutBtn.addEventListener("click", async () => {
     location.reload();
 })
 
-openSettingsBtn.addEventListener("click", () => {
+openSettingsBtn.addEventListener("click", async () => {
     setCurrentPage("settingsPage");
-    showCurrentPage();
+    await showCurrentPage();
 })
 
-settingBackBtn.addEventListener("click", () => {
+openStudyReposBtn.addEventListener("click", async () => {
+    setCurrentPage("studyReposPage");
+    await showCurrentPage();
+})
+
+openCreateStudyRepoBtn.addEventListener("click", async () => {
+    setCurrentPage("createStudyRepoPage");
+    await showCurrentPage();
+})
+
+settingBackBtn.addEventListener("click", async () => {
     setCurrentPage("homePage");
-    showCurrentPage();
+    await showCurrentPage();
+})
+
+studyReposBackBtn.addEventListener("click", async () => {
+    setCurrentPage("homePage");
+    await showCurrentPage();
+})
+
+createStudyRepoBackBtn.addEventListener("click", async () => {
+    setCurrentPage("studyReposPage");
+    await showCurrentPage();
 })
 
 titlebtn.addEventListener("click", () => {
@@ -67,14 +145,15 @@ loginButton.addEventListener("click", async () => {
                 password: passwordInput.value
             })
         })
+
         const data = await res.json()
 
         if (res.ok) {
             setCurrentPage("homePage");
-            showCurrentPage();
+            await showCurrentPage();
             await showCurrentUser();
         } else {
-            showMessageBox(loginPageMessageBox, "Invalid credentials")
+            showMessageBox(loginPageMessageBox, data.error || "Invalid credentials");
         }
     }
 });
@@ -105,13 +184,85 @@ registerButton.addEventListener("click", async () => {
         if (res.ok) {
             showMessageBox(registerPageMessageBox, "Account created! Going Home.")
             setCurrentPage("homePage");
-            showCurrentPage();
+            await showCurrentPage();
             await showCurrentUser();
         } else {
             showMessageBox(registerPageMessageBox, data.error || "Something went wrong")
         }
     }
 })
+
+saveRepoBtn.addEventListener("click", async () => {
+    if (createRepoNameInput.value === "") {
+        showMessageBox(createRepoPageMessageBox, "you must enter a studyrepo name");
+    } else {
+        await createStudyRepo(createRepoNameInput, createRepoDescriptionInput);
+    }
+})
+
+async function createStudyRepo(name, description) {
+    const payload = {
+        reponame: name.value,
+        repodescription: description.value
+    }
+
+    const res = await fetch('http://localhost:3000/repos/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+    })
+
+    if (res.ok) {
+        showMessageBox(createRepoPageMessageBox, "created study repo successfully, going back to studyrepos...");
+        name.value = "";
+        description.value = "";
+        setCurrentPage('studyReposPage')
+        setTimeout(async () => await showCurrentPage(), 1500);
+    } else {
+        showMessageBox(createRepoPageMessageBox, data.error || "Something went wrong")
+    }
+}
+
+async function getStudyRepos() {
+    const res = await fetch('http://localhost:3000/repos/', {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        console.log(data)
+        studyRepoCardsContainer.innerHTML = "";
+        data.forEach(repo => {
+            new createStudyRepoCards(repo.reponame, repo.repodescription);
+        })
+    } else {
+        placeholderMessageCon.classList.remove("Hide");
+        placeholderMessage.textContent = data.error || "Something went wrong"
+    }
+}
+
+async function getReposSummary() {
+    const res = await fetch('http://localhost:3000/repos/', {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+    const recentStudyReposSummary = document.getElementById("recentStudyReposSummary");
+
+    if (res.ok) {
+        recentStudyReposSummary.innerHTML = "";
+        data.forEach(repo => {
+            let recentReponame = document.createElement("p");
+            recentReponame.textContent = repo.reponame;
+            recentStudyReposSummary.appendChild(recentReponame)
+        })
+    } else {
+        placeholderMessageCon.classList.remove("Hide");
+        placeholderMessage.textContent = data.error || "Something went wrong"
+    }
+}
 
 async function logout() {
     await fetch('http://localhost:3000/auth/logout', {
@@ -134,6 +285,7 @@ async function getCurrentuser() {
 }
 
 async function showCurrentUser() {
+    headerCurrentUserLabelContainer.innerHTML = "";
     const user = await getCurrentuser();
     let currentUserBtn = document.createElement("button");
     currentUserBtn.textContent = user;
@@ -154,7 +306,7 @@ function showMessageBox(messageBoxEl, message) {
 }
 
 function hideAllPages() {
-    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper];
+    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper];
     Pages.forEach(page => {
         page.classList.add("Hide");
     })
@@ -173,7 +325,7 @@ function getCurrentPage() {
 }
 
 //shows the surrent page the user is on by using getCurrentPage() then checking the returned value
-function showCurrentPage() {
+async function showCurrentPage() {
     const currentPage = getCurrentPage()
 
     hideAllPages();
@@ -184,15 +336,21 @@ function showCurrentPage() {
         registrationPageWrapper.classList.remove("Hide");
     } else if (currentPage === "homePage") {
         homePageWrapper.classList.remove("Hide");
+        await getReposSummary() 
     } else if (currentPage === "settingsPage") {
         settingsPageWrapper.classList.remove("Hide");
+    } else if (currentPage === "studyReposPage") {
+        studyReposPageWrapper.classList.remove("Hide");
+        await getStudyRepos()
+    } else if (currentPage === "createStudyRepoPage") {
+        createStudyRepoPageWrapper.classList.remove("Hide");
     } else {
         loginPageWrapper.classList.remove("Hide");
     }
 }
 
 async function init() {
-    showCurrentPage();
+    await showCurrentPage();
     await showCurrentUser();
 }
 

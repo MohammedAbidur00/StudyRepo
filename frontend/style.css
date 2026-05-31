@@ -9,7 +9,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.Home-Page-Wrapper, .Settings-Page-Wrapper {
+.Home-Page-Wrapper, .Settings-Page-Wrapper, .Study-Repos-Page-Wrapper {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
@@ -102,6 +102,7 @@ body {
 .Top-Bar-Header-Container, .Top-Bar-Btns-Container {
     padding: 5px 7px;
     border-bottom: black 2px solid;
+    background-color: white;
 }
 
 .Top-Bar-Header-Container {
@@ -184,6 +185,16 @@ body {
     gap: 10px;
 }
 
+.Create-Study-Repo-Content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 25px;
+    margin-top: 40px;
+    justify-content: center;
+}
+
 .Summary-Container {
     border: black 1.5px solid;
     display: flex;
@@ -207,6 +218,7 @@ body {
     border-bottom-right-radius: 8px;
     max-width: fit-content;
     font-weight: bold;
+    font-size: 14.5px;
     text-decoration: wavy;
     box-shadow: 0 2px 5px rgba(0,0,0,0.35);
 }
@@ -257,13 +269,133 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.35);
 }
 
+.Summary-Content p {
+    font-family: monospace;
+}
+
+.Create-Repo-Inputs-Containers {
+    border: black 1.5px solid;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 13px;
+    border-radius: 8px;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+    width: 100%;
+}
+
+.Create-Repo-Inputs-Container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 15px 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+}
+
+.createRepoLabel {
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 17px;
+}
+
+.createRepoNameInput, .createRepoDescriptionInput {
+    border: black 1.5px solid;
+    padding: 7px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    font-family: monospace;
+    font-size: 15px;
+}
+
+.createRepoDescriptionInput {
+    height: 160px;
+}
+
+.Create-Repo-Btns-Container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+.Create-Repo-Btns-Container button {
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    font-size: 14.5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+    padding: 7px 10px;
+    border: black 1px solid;
+    border-radius: 6px;
+}
+
+.Study-Repo-Card {
+    border: black 1.5px solid;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    width: calc((100% - 30px) / 4);
+    min-height: 350px;
+}
+
+.Study-Repo-Card div {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.Study-Repo-Card-Name-Container {
+    border-bottom: black 1.5px solid;
+    padding: 12px 10px;
+}
+
+.Study-Repo-Card-Name-Container h1 {
+    color: black;
+    font-weight: 100;
+    font-family: monospace;
+    font-size: 28px;
+}
+
+.Study-Repo-Card-Des-Container {
+    padding: 20px 10px;
+}
+
+.Study-Repo-Card-Des-Container p {
+    color: black;
+    font-family: monospace;
+    font-size: 15px;
+}
+
+.Descriptio-Label {
+    font-weight: bold;
+}
+
+.Placeholder-Message {
+    font-weight: bold;
+    font-family: Arial;
+    color: black;
+    font-size: 23px;
+}
+
 :focus {
     outline: none;
 }
 
-input[type="text"]::placeholder, input[type="password"]::placeholder, input[type="email"]::placeholder {
+input[type="text"]::placeholder, input[type="password"]::placeholder, input[type="email"]::placeholder, textarea::placeholder {
     color: black;
     font-weight: bold;
+}
+
+input[type="text"]::selection, input[type="password"]::selection, input[type="email"]::selection, textarea::selection {
+    color: white;
+    background-color: black;
+}
+
+textarea {
+    resize: none;
 }
 
 button {
