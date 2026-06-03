@@ -115,7 +115,17 @@
                     <div class="Setting-Container-Label">
                         <p>ACCOUNT/PROFILE</p>
                     </div>
-                    <div class="Setting-Content"></div>
+                    <div class="Setting-Content">
+                        <div class="Content-Title-Container">
+                            <p>USERNAME</p>
+                        </div>
+                        <div id="showChangeUsernameInputCon" class="Show-Change-Username-Input-Container">
+                            <input id="showChangeUsernameInput" class="Show-Change-Username-Input" type="text" placeholder="Enter a username">
+                            <button id="changeUsernameUpdateBtn">UPDATE</button>
+                            <button id="changeUsernameCancelBtn" class="Hide">CANCEL</button>
+                        </div>
+                        <div id="settingsUsernameMessageBox" class="Settings-Message-Box Hide"></div>
+                    </div>
                 </div>
                 <div class="Settings-Container">
                     <div class="Setting-Container-Label">
@@ -148,9 +158,15 @@
                     </div>
                 </div>
                 <div class="Top-Bar-Btns-Container">
-                    <button id="openCreateStudyRepoBtn" class="Top-Bar-Btn"> + CREATE STUDYREPO</button>
-                    <button class="Top-Bar-Btn">EDIT STUDYREPOS</button>
-                    <button class="Top-Bar-Btn material-icons">star</button>
+                    <div>
+                        <button id="openCreateStudyRepoBtn" class="Top-Bar-Btn"> + CREATE STUDYREPO</button>
+                    </div>
+                    <div id="editStudyReposBtnsContainer">
+                        <button id="editReposBtn" class="Top-Bar-Btn">EDIT STUDYREPOS</button>
+                    </div>
+                    <div>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
                 </div>
             </div>
             <div id="studyRepoCardsContainer" class="Page-Content">
@@ -187,6 +203,27 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="studyRepoPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="studyRepoBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1 id="studyRepoName"></h1>
+                    </div>
+                </div>
+                <div class="Top-Bar-Btns-Container">
+                    <button class="Top-Bar-Btn"> + ADD FOLDER</button>
+                    <button class="Top-Bar-Btn"> + ADD NOTE</button>
+                    <button class="Top-Bar-Btn"> + ADD DOCUMENT</button>
+                    <button class="Top-Bar-Btn">EDIT STUDYREPO</button>
+                    <button class="Top-Bar-Btn">VIEW ANALYTICS</button>
+                    <button class="Top-Bar-Btn material-icons">star</button>
+                </div>
+            </div>
+            <div id="studyRepoContentContainer" class="Page-Content"></div>
         </div>
     </div>
     

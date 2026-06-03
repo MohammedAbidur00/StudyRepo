@@ -26,7 +26,7 @@ const register = async (req, res) => {
 
     // create a token
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     )
@@ -81,7 +81,7 @@ const login = async (req, res) => {
 
     // create a token
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     )
@@ -100,8 +100,11 @@ const login = async (req, res) => {
   }
 }
 
-const getMe = (req, res) => {
-  res.json({ username: req.user.username, id: req.user.id })
+const getMe = async (req, res) => {
+  const id = req.user.id
+  const result = await pool.query('SELECT username, email FROM users WHERE id = $1', [id]);
+  const user = result.rows[0];
+  res.json({ id: req.user.id, username: user.username, email: user.email})
 }
 
 const logout = (req, res) => {

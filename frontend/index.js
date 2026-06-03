@@ -5,6 +5,7 @@ const homePageWrapper = document.getElementById("homePageWrapper");
 const settingsPageWrapper = document.getElementById("settingsPageWrapper");
 const studyReposPageWrapper = document.getElementById("studyReposPageWrapper");
 const createStudyRepoPageWrapper = document.getElementById("createStudyRepoPageWrapper");
+const studyRepoPageWrapper = document.getElementById("studyRepoPageWrapper");
 
 const goToRegisterBtn = document.getElementById("goToRegisterBtn");
 const goToLoginBtn = document.getElementById("goToLoginBtn");
@@ -27,9 +28,11 @@ const openCreateStudyRepoBtn = document.getElementById("openCreateStudyRepoBtn")
 const settingBackBtn = document.getElementById("settingBackBtn");
 const studyReposBackBtn = document.getElementById("studyReposBackBtn");
 const createStudyRepoBackBtn = document.getElementById("createStudyRepoBackBtn");
+const studyRepoBackBtn = document.getElementById("studyRepoBackBtn");
 
 const loginPageMessageBox = document.getElementById("loginPageMessageBox");
 const registerPageMessageBox = document.getElementById("registerPageMessageBox");
+const settingsUsernameMessageBox = document.getElementById("settingsUsernameMessageBox");
 
 const createRepoNameInput = document.getElementById("createRepoNameInput");
 const createRepoDescriptionInput = document.getElementById("createRepoDescriptionInput");
@@ -42,10 +45,22 @@ const studyRepoCardsContainer = document.getElementById("studyRepoCardsContainer
 const placeholderMessage = document.getElementById("placeholderMessage");
 const placeholderMessageCon = document.getElementById("placeholderMessageCon");
 
+const studyRepoName = document.getElementById("studyRepoName");
+
+const showChangeUsernameInput = document.getElementById("showChangeUsernameInput");
+const showChangeUsernameInputCon = document.getElementById("showChangeUsernameInputCon")
+const changeUsernameCancelBtn = document.getElementById("changeUsernameCancelBtn");
+const changeUsernameUpdateBtn = document.getElementById("changeUsernameUpdateBtn");
+const studyRepoContentContainer = document.getElementById("studyRepoContentContainer")
+const editReposBtn = document.getElementById("editReposBtn");
+
 class createStudyRepoCards {
-    constructor(repoName, repoDescription) {
+    constructor(repoId, repoName, repoDescription) {
+        this.repoId = repoId;
         this.repoName = repoName;
         this.repoDescription = repoDescription;
+
+        console.log(this.repoId)
 
         this.repoCard = document.createElement("div");
         this.repoCardLabelCon = document.createElement("div");
@@ -56,6 +71,11 @@ class createStudyRepoCards {
         this.repoCardTitle = document.createElement("h1");
         this.repoCardDescriptionLabel = document.createElement("p");
         this.repoCardDescription = document.createElement("p");
+
+        this.repoRemoveButton = document.createElement("button")
+        this.repoRemoveButton.classList.add("removeBtn")
+        this.repoRemoveButton.textContent = "×";
+        this.repoRemoveButton.classList.add("Hide");
 
         this.repoCardLabel.textContent = "STUDYREPO";
         this.repoCardTitle.textContent = this.repoName;
@@ -78,8 +98,69 @@ class createStudyRepoCards {
         this.repoCard.appendChild(this.repoCardLabelCon);
         this.repoCard.appendChild(this.repoCardTitleCon);
         this.repoCard.appendChild(this.repoCardDescriptionCon);
+        this.repoCard.appendChild(this.repoRemoveButton);
 
         studyRepoCardsContainer.appendChild(this.repoCard);
+
+        this.repoCardTitleCon.addEventListener("click", async () => {
+            setCurrentPage("studyRepoPage");
+            localStorage.setItem("currentRepo", this.repoId);
+            await showCurrentPage();
+        })
+    }
+}
+
+class buildStudyRepoContent {
+    constructor(repoId) {
+        this.repoId = repoId
+
+        this.studyRepoDocumentsContainer = document.createElement("div");
+        this.studyRepoFoldersContainer = document.createElement("div");
+        this.studyRepoNotesContainer = document.createElement("div");
+
+        this.studyRepoDocumentsTitleContainer = document.createElement("div");
+        this.studyRepoFoldersTitleContainer = document.createElement("div");
+        this.studyRepoNotesTitleContainer = document.createElement("div");
+
+        this.studyRepoDocumentsElementsContainer = document.createElement("div");
+        this.studyRepoFoldersElementsContainer = document.createElement("div");
+        this.studyRepoNotesElementsContainer = document.createElement("div");
+
+        this.studyRepoDocumentsTitle = document.createElement("h2");
+        this.studyRepoFoldersTitle = document.createElement("h2");
+        this.studyRepoNotesTitle = document.createElement("h2");
+
+        this.studyRepoDocumentsContainer.classList.add("Study-Repo-Content-Container");
+        this.studyRepoFoldersContainer.classList.add("Study-Repo-Content-Container");
+        this.studyRepoNotesContainer.classList.add("Study-Repo-Content-Container");
+
+        this.studyRepoDocumentsTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+        this.studyRepoFoldersTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+        this.studyRepoNotesTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+
+        this.studyRepoDocumentsElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyRepoFoldersElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyRepoNotesElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+
+        this.studyRepoDocumentsTitle.textContent = "DOCUMENTS";
+        this.studyRepoFoldersTitle.textContent = "FOLDERS";
+        this.studyRepoNotesTitle.textContent = "NOTES";
+
+        this.studyRepoDocumentsTitleContainer.appendChild(this.studyRepoDocumentsTitle);
+        this.studyRepoFoldersTitleContainer.appendChild(this.studyRepoFoldersTitle);
+        this.studyRepoNotesTitleContainer.appendChild(this.studyRepoNotesTitle);
+
+        this.studyRepoDocumentsContainer.appendChild(this.studyRepoDocumentsTitleContainer);
+        this.studyRepoFoldersContainer.appendChild(this.studyRepoFoldersTitleContainer);
+        this.studyRepoNotesContainer.appendChild(this.studyRepoNotesTitleContainer)
+
+        this.studyRepoDocumentsContainer.appendChild(this.studyRepoDocumentsElementsContainer);
+        this.studyRepoFoldersContainer.appendChild(this.studyRepoFoldersElementsContainer);
+        this.studyRepoNotesContainer.appendChild(this.studyRepoNotesElementsContainer);
+
+        studyRepoContentContainer.appendChild(this.studyRepoDocumentsContainer);
+        studyRepoContentContainer.appendChild(this.studyRepoFoldersContainer);
+        studyRepoContentContainer.appendChild(this.studyRepoNotesContainer);
     }
 }
 
@@ -113,9 +194,16 @@ openCreateStudyRepoBtn.addEventListener("click", async () => {
     await showCurrentPage();
 })
 
+studyRepoBackBtn.addEventListener("click", async () => {
+    setCurrentPage("studyReposPage");
+    await showCurrentPage();
+})
+
 settingBackBtn.addEventListener("click", async () => {
     setCurrentPage("homePage");
+    settingElementsHide()
     await showCurrentPage();
+    location.reload();
 })
 
 studyReposBackBtn.addEventListener("click", async () => {
@@ -130,6 +218,12 @@ createStudyRepoBackBtn.addEventListener("click", async () => {
 
 titlebtn.addEventListener("click", () => {
     location.reload();
+})
+
+editReposBtn.addEventListener("click", () => {
+    document.querySelectorAll(".removeBtn").forEach(btn => {
+        btn.classList.remove("Hide");
+    })
 })
 
 loginButton.addEventListener("click", async () => {
@@ -200,6 +294,55 @@ saveRepoBtn.addEventListener("click", async () => {
     }
 })
 
+showChangeUsernameInput.addEventListener("input", async () => {
+    const getUsername = await getCurrentuser();
+    if (showChangeUsernameInput.value !== getUsername) {
+        changeUsernameCancelBtn.classList.remove("Hide")
+    } else {
+        changeUsernameCancelBtn.classList.add("Hide")
+    }
+})
+
+changeUsernameCancelBtn.addEventListener("click", async () => {
+    const getUsername = await getCurrentuser();
+    showChangeUsernameInput.value = getUsername
+    changeUsernameCancelBtn.classList.add("Hide")
+})
+
+function settingElementsHide() {
+    changeUsernameCancelBtn.classList.add("Hide")
+}
+
+changeUsernameUpdateBtn.addEventListener("click", async () => {
+    const getUsername = await getCurrentuser();
+    const getEmail = await getCurrentUserEmail();
+    if (showChangeUsernameInput.value === getUsername) {
+        showMessageBox(settingsUsernameMessageBox, "Nothing to update here")
+    } else {
+        const payload = {
+            username: showChangeUsernameInput.value,
+            email: getEmail
+        }
+        const id = await getCurrentUserId();
+        const res = await fetch(`http://localhost:3000/users/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            changeUsernameCancelBtn.classList.add("Hide")
+            showMessageBox(settingsUsernameMessageBox, "Username updated successfully");
+        } else {
+            console.log(data.error)
+            showMessageBox(settingsUsernameMessageBox, data.error || "Something went wrong");
+        }
+    }
+})
+
 async function createStudyRepo(name, description) {
     const payload = {
         reponame: name.value,
@@ -235,11 +378,37 @@ async function getStudyRepos() {
         console.log(data)
         studyRepoCardsContainer.innerHTML = "";
         data.forEach(repo => {
-            new createStudyRepoCards(repo.reponame, repo.repodescription);
+            new createStudyRepoCards(repo.id, repo.reponame, repo.repodescription);
         })
     } else {
         placeholderMessageCon.classList.remove("Hide");
         placeholderMessage.textContent = data.error || "Something went wrong"
+    }
+}
+
+async function populateSettingsInfo() {
+    const currentUser = await getCurrentuser();
+
+    showChangeUsernameInput.value = currentUser;
+}
+
+async function getStudyRepo() {
+    const repoId = localStorage.getItem("currentRepo")
+    console.log(repoId)
+    const res = await fetch(`http://localhost:3000/repos/${repoId}`, {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        console.log(data)
+        studyRepoName.textContent = data[0].reponame.toUpperCase();
+        studyRepoContentContainer.innerHTML = "";
+        new buildStudyRepoContent(data[0].id);
+    } else {
+        setCurrentPage("studyReposPage");
+        await showCurrentPage()
     }
 }
 
@@ -260,7 +429,7 @@ async function getReposSummary() {
         })
     } else {
         placeholderMessageCon.classList.remove("Hide");
-        placeholderMessage.textContent = data.error || "Something went wrong"
+        placeholderMessage.textContent = data.error || "Something went wrong";
     }
 }
 
@@ -281,6 +450,30 @@ async function getCurrentuser() {
         const data = await res.json();
         const username = data.username
         return username
+    }
+}
+
+async function getCurrentUserId() {
+    const res = await fetch('http://localhost:3000/auth/me', {
+        credentials: 'include'
+    })
+
+    if (res.ok) {
+        const data = await res.json();
+        const id = data.id
+        return id
+    }
+}
+
+async function getCurrentUserEmail() {
+    const res = await fetch('http://localhost:3000/auth/me', {
+        credentials: 'include'
+    })
+
+    if (res.ok) {
+        const data = await res.json();
+        const email = data.email
+        return email
     }
 }
 
@@ -306,7 +499,7 @@ function showMessageBox(messageBoxEl, message) {
 }
 
 function hideAllPages() {
-    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper];
+    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper];
     Pages.forEach(page => {
         page.classList.add("Hide");
     })
@@ -339,11 +532,15 @@ async function showCurrentPage() {
         await getReposSummary() 
     } else if (currentPage === "settingsPage") {
         settingsPageWrapper.classList.remove("Hide");
+        await populateSettingsInfo()
     } else if (currentPage === "studyReposPage") {
         studyReposPageWrapper.classList.remove("Hide");
         await getStudyRepos()
     } else if (currentPage === "createStudyRepoPage") {
         createStudyRepoPageWrapper.classList.remove("Hide");
+    } else if (currentPage === "studyRepoPage") {
+        studyRepoPageWrapper.classList.remove("Hide");
+        await getStudyRepo();
     } else {
         loginPageWrapper.classList.remove("Hide");
     }

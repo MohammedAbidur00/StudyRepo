@@ -92,11 +92,22 @@ body {
     font-weight: bold;
 }
 
+.Settings-Message-Box  {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.Settings-Message-Box p {
+    font-family: monospace;
+    font-weight: bold;
+}
+
 .Top-Bar {
     position: fixed;
     display: flex;
     flex-direction: column;
     width: 100%;
+    z-index: 10000;
 }
 
 .Top-Bar-Header-Container, .Top-Bar-Btns-Container {
@@ -158,6 +169,7 @@ body {
     font-weight: bold;
     white-space: nowrap;
     box-shadow: 0 2px 5px rgba(0,0,0,0.23);
+    height: 100%;
 }
 
 .Top-Bar-Btn:hover {
@@ -252,9 +264,10 @@ body {
 .Setting-Content {
     border: black 1.5px solid;
     border-radius: 6px;
-    padding: 5px;
     margin-left: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
 }
 
 #analyticsSum {
@@ -339,6 +352,11 @@ body {
     border-radius: 8px;
     width: calc((100% - 30px) / 4);
     min-height: 350px;
+    position: relative;
+}
+
+.Study-Repo-Card:hover {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.55);
 }
 
 .Study-Repo-Card div {
@@ -350,6 +368,11 @@ body {
 .Study-Repo-Card-Name-Container {
     border-bottom: black 1.5px solid;
     padding: 12px 10px;
+}
+
+.Study-Repo-Card-Name-Container:hover {
+    opacity: 0.5;
+    cursor: pointer;
 }
 
 .Study-Repo-Card-Name-Container h1 {
@@ -380,8 +403,109 @@ body {
     font-size: 23px;
 }
 
+.Show-Change-Username-Input {
+    border-radius: 4px;
+    background-color: white;
+    border: black 1.5px solid;
+    width: 100%;
+    padding: 4px;
+}
+
+.Show-Change-Username-Input-Container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    padding: 10px 7px;
+}
+
+.Show-Change-Username-Input-Container button {
+    border: black 2px solid;
+    border-radius: 4px;
+    padding: 3px 6px;
+    color: black;
+    background-color: white;
+    font-weight: bold;
+}
+
+.Content-Title-Container {
+    border-bottom: black 1.5px solid;
+    padding: 5px;
+}
+
+.Content-Title-Container p {
+    font-weight: bold;
+    font-size: 13.5px;
+}
+
+.Study-Repo-Content-Container {
+    border: black 1.5px solid;
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+}
+
+.Study-Repo-Content-Container-Title {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+.Study-Repo-Content-Container-Elements {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+.Study-Repo-Content-Container-Elements {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+}
+
+.Study-Repo-Content-Card {
+    width: fit-content;
+    border: black 1.5px solid;
+    display: flex;
+    justify-content: center;
+}
+
+.Study-Repo-Content {
+    width: 200px;
+    height: 250px;
+    border-radius: 4px;
+}
+
+.removeBtn {
+    position: absolute;
+    border: black 2px solid;
+    border-radius: 50px;
+    width: 28px;
+    height: 28px;
+    top: 5px;
+    left: 305px;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2px;
+    font-weight: 100;
+    background-color: white;
+    z-index: 1;
+    line-height: 1;
+}
+
 :focus {
     outline: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
 }
 
 input[type="text"]::placeholder, input[type="password"]::placeholder, input[type="email"]::placeholder, textarea::placeholder {
@@ -396,6 +520,10 @@ input[type="text"]::selection, input[type="password"]::selection, input[type="em
 
 textarea {
     resize: none;
+}
+
+iframe {
+    border: none;
 }
 
 button {

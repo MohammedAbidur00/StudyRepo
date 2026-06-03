@@ -2,8 +2,9 @@ const pool = require('../db')
 
 const getRepo = async (req, res) => {
     try {
+        const user_id = req.user.id
         const { id } = req.params
-        const result = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id])
+        const result = await pool.query('SELECT * FROM userrepos WHERE id = $1 AND user_id = $2', [id, user_id])
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Repo not found' })
         }

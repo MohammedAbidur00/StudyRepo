@@ -52,7 +52,11 @@ const updateUser = async (req, res) => {
     res.json(result.rows[0])
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Something went wrong' })
+    if (err.code === '23505') {
+      res.status(409).json({ error: 'Username already taken' })
+    } else {
+      res.status(500).json({ error: 'Something went wrong' })
+    }
   }
 }
 
