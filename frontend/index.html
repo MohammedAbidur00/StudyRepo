@@ -52,12 +52,14 @@
                     <div id="headerCurrentUserLabelContainer" class="Header-Current-User-Label-Container"></div>
                 </div>
                 <div class="Top-Bar-Btns-Container">
-                    <button id="openStudyReposBtn" class="Top-Bar-Btn">STUDY REPOS</button>
-                    <button class="Top-Bar-Btn">SCHEDULE</button>
-                    <button class="Top-Bar-Btn">DOCUMENTS</button>
-                    <button class="Top-Bar-Btn">ANALYTICS</button>
-                    <button id="openSettingsBtn" class="Top-Bar-Btn">SETTINGS</button>
-                    <button class="Top-Bar-Btn material-icons">star</button>
+                    <div>
+                        <button id="openStudyReposBtn" class="Top-Bar-Btn">STUDY REPOS</button>
+                        <button class="Top-Bar-Btn">SCHEDULE</button>
+                        <button class="Top-Bar-Btn">DOCUMENTS</button>
+                        <button class="Top-Bar-Btn">ANALYTICS</button>
+                        <button id="openSettingsBtn" class="Top-Bar-Btn">SETTINGS</button>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
                 </div>
             </div>
             <div class="Page-Content">
@@ -104,10 +106,12 @@
                     </div>
                 </div>
                 <div class="Top-Bar-Btns-Container">
-                    <button class="Top-Bar-Btn">USER SETTINGS</button>
-                    <button class="Top-Bar-Btn">APP SETTINGS</button>
-                    <button id="logoutBtn" class="Top-Bar-Btn">LOGOUT</button>
-                    <button class="Top-Bar-Btn material-icons">star</button>
+                    <div>
+                        <button class="Top-Bar-Btn">USER SETTINGS</button>
+                        <button class="Top-Bar-Btn">APP SETTINGS</button>
+                        <button id="logoutBtn" class="Top-Bar-Btn">LOGOUT</button>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
                 </div>
             </div>
             <div class="Settings-Page-Content">
@@ -163,6 +167,9 @@
                     </div>
                     <div id="editStudyReposBtnsContainer">
                         <button id="editReposBtn" class="Top-Bar-Btn">EDIT STUDYREPOS</button>
+                        <button id="cancelReposEditBtn" class="Top-Bar-Btn Hide">CANCEL</button>
+                        <button id="selectReposBtn" class="Top-Bar-Btn Hide">SELECT</button>
+                        <button id="deleteReposBtn" class="Top-Bar-Btn Hide">DELETE</button>
                     </div>
                     <div>
                         <button class="Top-Bar-Btn material-icons">star</button>
@@ -215,17 +222,21 @@
                     </div>
                 </div>
                 <div class="Top-Bar-Btns-Container">
-                    <button class="Top-Bar-Btn"> + ADD FOLDER</button>
-                    <button class="Top-Bar-Btn"> + ADD NOTE</button>
-                    <button class="Top-Bar-Btn"> + ADD DOCUMENT</button>
-                    <button class="Top-Bar-Btn">EDIT STUDYREPO</button>
-                    <button class="Top-Bar-Btn">VIEW ANALYTICS</button>
-                    <button class="Top-Bar-Btn material-icons">star</button>
+                    <div>
+                        <button class="Top-Bar-Btn"> + ADD FOLDER</button>
+                        <button class="Top-Bar-Btn"> + ADD NOTE</button>
+                        <button class="Top-Bar-Btn"> + ADD DOCUMENT</button>
+                        <button class="Top-Bar-Btn">EDIT STUDYREPO</button>
+                        <button class="Top-Bar-Btn">VIEW ANALYTICS</button>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
                 </div>
             </div>
             <div id="studyRepoContentContainer" class="Page-Content"></div>
         </div>
     </div>
+
+    <div id="dialogWrapper" class="Dialog-Wrapper Hide"></div>
     
     <script src="index.js"></script>
 </body>

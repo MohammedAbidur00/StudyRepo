@@ -53,14 +53,23 @@ const changeUsernameCancelBtn = document.getElementById("changeUsernameCancelBtn
 const changeUsernameUpdateBtn = document.getElementById("changeUsernameUpdateBtn");
 const studyRepoContentContainer = document.getElementById("studyRepoContentContainer")
 const editReposBtn = document.getElementById("editReposBtn");
+const editStudyReposBtnsContainer = document.getElementById("editStudyReposBtnsContainer");
+const cancelReposEditBtn = document.getElementById("cancelReposEditBtn");
+const selectReposBtn = document.getElementById("selectReposBtn");
+const dialogWrapper = document.getElementById("dialogWrapper");
+const dialogBox = document.getElementById("dialogBox");
+const deleteReposBtn = document.getElementById("deleteReposBtn");
+
+let repoToDelete = "";
+let isMultiSelect = false;
+let reposToDelete = [];
 
 class createStudyRepoCards {
     constructor(repoId, repoName, repoDescription) {
         this.repoId = repoId;
         this.repoName = repoName;
         this.repoDescription = repoDescription;
-
-        console.log(this.repoId)
+        this.selected = false;
 
         this.repoCard = document.createElement("div");
         this.repoCardLabelCon = document.createElement("div");
@@ -71,6 +80,13 @@ class createStudyRepoCards {
         this.repoCardTitle = document.createElement("h1");
         this.repoCardDescriptionLabel = document.createElement("p");
         this.repoCardDescription = document.createElement("p");
+
+        this.repoCardEnterBtnCon = document.createElement("div");
+        this.repoCardEnterBtnCon.classList.add("Study-Repo-Card-Enter-Container");
+        this.repoCardEnterBtn = document.createElement("button");
+        this.repoCardEnterBtn.textContent = "ENTER";
+        this.repoCardEnterBtn.classList.add("Enter-Repo-Btn")
+        this.repoCardEnterBtnCon.appendChild(this.repoCardEnterBtn);
 
         this.repoRemoveButton = document.createElement("button")
         this.repoRemoveButton.classList.add("removeBtn")
@@ -99,14 +115,68 @@ class createStudyRepoCards {
         this.repoCard.appendChild(this.repoCardTitleCon);
         this.repoCard.appendChild(this.repoCardDescriptionCon);
         this.repoCard.appendChild(this.repoRemoveButton);
+        this.repoCard.appendChild(this.repoCardEnterBtnCon);
 
         studyRepoCardsContainer.appendChild(this.repoCard);
 
-        this.repoCardTitleCon.addEventListener("click", async () => {
+        this.repoCard.addEventListener("click", () => {
+            if (this.isSelected()) {
+                this.selected = !this.selected
+                if (this.selected) {
+                    this.Selected(this.selected);
+                } else {
+                    this.Selected(this.selected);
+                }
+            }
+        })
+
+        this.repoCardEnterBtn.addEventListener("click", async () => {
             setCurrentPage("studyRepoPage");
             localStorage.setItem("currentRepo", this.repoId);
             await showCurrentPage();
+        });
+
+        this.repoRemoveButton.addEventListener("click", () => {
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            repoToDelete = this.repoId;
+            const dialogText = "Are you sure you want to delete this study repo?, If so it will be deleted permanently and you won't be able to get it back."
+            const btnsArr = [
+                {
+                    btnId: "comfirmDeleteBtn",
+                    btnText: "Delete",
+                },
+                {
+                    btnId: "confirmCancelBtn",
+                    btnText: "Cancel"
+                }
+            ]
+            new createDialog(dialogText, btnsArr)
         })
+    }
+
+    isSelected() {
+        return isMultiSelect;
+    }
+
+    Selected(state) {
+        if (state) {
+            reposToDelete.push(this.repoId);
+            const index = reposToDelete.indexOf(this.repoId)
+            console.log(reposToDelete);
+            this.repoRemoveButton.classList.remove("Hide");
+            this.repoRemoveButton.classList.add("removeBtnNum")
+            this.repoRemoveButton.textContent = index;
+            this.repoCard.classList.remove("Selected-Repos-Style");
+        } else {
+            const index = reposToDelete.indexOf(this.repoId)
+            reposToDelete.splice(index, 1);
+            console.log(reposToDelete);
+            this.repoRemoveButton.classList.add("Hide");
+            this.repoRemoveButton.classList.remove("removeBtnNum")
+            this.repoCard.classList.add("Selected-Repos-Style");
+        }
     }
 }
 
@@ -161,6 +231,44 @@ class buildStudyRepoContent {
         studyRepoContentContainer.appendChild(this.studyRepoDocumentsContainer);
         studyRepoContentContainer.appendChild(this.studyRepoFoldersContainer);
         studyRepoContentContainer.appendChild(this.studyRepoNotesContainer);
+    }
+}
+
+class createDialog {
+    constructor(dialogText, dialogBtns) {
+        this.dialogText = dialogText;
+        this.dialogBtns = dialogBtns;
+
+        this.dialogInfoBox = document.createElement("div");
+        this.dialogBoxTitleCon = document.createElement("div");
+        this.dialogBoxInfoCon = document.createElement("div");
+        this.dialogBoxBtnsCon = document.createElement("div");
+
+        this.dialogBoxTitle = document.createElement("p");
+        this.dialogBoxTitle.textContent = "Dialog Box";
+        this.dialogBoxTitleCon.appendChild(this.dialogBoxTitle);
+
+        this.dialogBoxInfo = document.createElement("p");
+        this.dialogBoxInfo.textContent = this.dialogText;
+        this.dialogBoxInfoCon.appendChild(this.dialogBoxInfo)
+
+        this.dialogInfoBox.classList.add("Dialog-Info-Box");
+        this.dialogBoxTitleCon.classList.add("dialogBoxTitle");
+        this.dialogBoxInfoCon.classList.add("dialogBoxInfo");
+        this.dialogBoxBtnsCon.classList.add("dialogBoxBtns");
+
+        dialogBtns.forEach(btn => {
+            this.dialogBtn = document.createElement("button");
+            this.dialogBtn.id = btn.btnId;
+            this.dialogBtn.textContent = btn.btnText;
+            this.dialogBoxBtnsCon.appendChild(this.dialogBtn);
+        })
+
+        this.dialogInfoBox.appendChild(this.dialogBoxTitleCon);
+        this.dialogInfoBox.appendChild(this.dialogBoxInfoCon);
+        this.dialogInfoBox.appendChild(this.dialogBoxBtnsCon);
+
+        dialogWrapper.appendChild(this.dialogInfoBox);
     }
 }
 
@@ -220,10 +328,52 @@ titlebtn.addEventListener("click", () => {
     location.reload();
 })
 
-editReposBtn.addEventListener("click", () => {
+editReposBtn.addEventListener("click", async () => {
+    await getStudyRepos()
+    editReposBtn.classList.add("Hide");
     document.querySelectorAll(".removeBtn").forEach(btn => {
         btn.classList.remove("Hide");
     })
+    document.querySelectorAll(".Enter-Repo-Btn").forEach(btn => {
+        btn.classList.add("Disbaled-Btn-Style");
+        btn.disabled = true
+    })
+    openCreateStudyRepoBtn.disabled = true;
+    cancelReposEditBtn.classList.remove("Hide");
+    selectReposBtn.classList.remove("Hide");
+})
+
+cancelReposEditBtn.addEventListener("click", () => {
+    leaveEditMode();
+})
+
+selectReposBtn.addEventListener("click", () => {
+    document.querySelectorAll(".Study-Repo-Card").forEach(card => {
+        card.classList.add("Selected-Repos-Style");
+    })
+    document.querySelectorAll(".removeBtn").forEach(btn => {
+        btn.classList.add("Hide");
+    })
+    isMultiSelect = true;
+})
+
+deleteReposBtn.addEventListener("click", async () => {
+    dialogWrapper.classList.remove("Hide")
+    dialogWrapper.innerHTML = "";
+    document.body.style.overflow = "hidden";
+    repoToDelete = this.repoId;
+    const dialogText = "Are you sure you want to delete these StudyRepos?, If so they will be deleted permanently and you won't be able to get them back."
+    const btnsArr = [
+        {
+            btnId: "comfirmReposDeleteBtn",
+            btnText: "Delete",
+        },
+        {
+            btnId: "confirmReposCancelBtn",
+            btnText: "Cancel"
+        }
+    ]
+    new createDialog(dialogText, btnsArr)
 })
 
 loginButton.addEventListener("click", async () => {
@@ -251,6 +401,26 @@ loginButton.addEventListener("click", async () => {
         }
     }
 });
+
+function leaveEditMode() {
+    isMultiSelect = false;
+    reposToDelete = [];
+    document.querySelectorAll(".removeBtn").forEach(btn => {
+        btn.classList.add("Hide");
+    })
+    document.querySelectorAll(".Enter-Repo-Btn").forEach(btn => {
+        btn.classList.remove("Disbaled-Btn-Style");
+        btn.disabled = false
+    })
+    document.querySelectorAll(".Study-Repo-Card").forEach(card => {
+        card.classList.remove("Selected-Repos-Style");
+    })
+    openCreateStudyRepoBtn.disabled = false;
+    cancelReposEditBtn.classList.add("Hide");
+    selectReposBtn.classList.add("Hide");
+    editReposBtn.classList.remove("Hide");
+    deleteReposBtn.classList.add("Hide");
+}
 
 registerButton.addEventListener("click", async () => {
     let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -313,6 +483,96 @@ function settingElementsHide() {
     changeUsernameCancelBtn.classList.add("Hide")
 }
 
+document.addEventListener("click", async (event) => {
+    if (event.target.id === "confirmCancelBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "dialogOkayBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+        leaveEditMode();
+        location.reload();
+    } else if (event.target.id === "comfirmDeleteBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+        leaveEditMode();
+        const isRepoDeleted = await deleteStudyRepo(repoToDelete);
+        if (isRepoDeleted.deleted) {
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            const dialogText = isRepoDeleted.message
+            const btnArr = [
+                {
+                    btnId: "dialogOkayBtn",
+                    btnText: "Okay"
+                }
+            ]
+            new createDialog(dialogText, btnArr);
+        } else {
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            const dialogText = isRepoDeleted.error || "Something went wrong";
+            const btnArr = [
+                {
+                    btnId: "dialogOkayBtn",
+                    btnText: "Okay"
+                }
+            ]
+            new createDialog(dialogText, btnArr);
+        }
+    } else if (event.target.id === "comfirmReposDeleteBtn") {
+        const functionReturns = [];
+
+        for (const repo of reposToDelete) {
+            const isRepoDeleted = await deleteStudyRepo(repo);
+            functionReturns.push(isRepoDeleted.deleted);
+        }
+
+        const isAllSuccess = functionReturns.every(value => value === true);
+
+        if (isAllSuccess) {
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            const dialogText = "StudyRepos successfully deleted."
+            const btnArr = [
+                {
+                    btnId: "dialogOkayBtn",
+                    btnText: "Okay"
+                }
+            ]
+            new createDialog(dialogText, btnArr);
+        } else {
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            const dialogText = "Something went wrong";
+            const btnArr = [
+                {
+                    btnId: "dialogOkayBtn",
+                    btnText: "Okay"
+                }
+            ]
+            new createDialog(dialogText, btnArr);
+        }
+    } else if (event.target.id === "confirmReposCancelBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    }
+})
+
+studyRepoCardsContainer.addEventListener("click", (event) => {
+    if (isMultiSelect) {
+        const card = event.target.closest(".Selected-Repos-Style");
+        if (!card) {
+            selectReposBtn.classList.add("Hide");
+            deleteReposBtn.classList.remove("Hide");
+        }
+    }
+})
+
 changeUsernameUpdateBtn.addEventListener("click", async () => {
     const getUsername = await getCurrentuser();
     const getEmail = await getCurrentUserEmail();
@@ -357,11 +617,12 @@ async function createStudyRepo(name, description) {
     })
 
     if (res.ok) {
+        createStudyRepoBackBtn.classList.add("Hide");
         showMessageBox(createRepoPageMessageBox, "created study repo successfully, going back to studyrepos...");
         name.value = "";
         description.value = "";
         setCurrentPage('studyReposPage')
-        setTimeout(async () => await showCurrentPage(), 1500);
+        setTimeout(async () => await showCurrentPage(), 1000);
     } else {
         showMessageBox(createRepoPageMessageBox, data.error || "Something went wrong")
     }
@@ -375,7 +636,6 @@ async function getStudyRepos() {
     const data = await res.json();
 
     if (res.ok) {
-        console.log(data)
         studyRepoCardsContainer.innerHTML = "";
         data.forEach(repo => {
             new createStudyRepoCards(repo.id, repo.reponame, repo.repodescription);
@@ -409,6 +669,27 @@ async function getStudyRepo() {
     } else {
         setCurrentPage("studyReposPage");
         await showCurrentPage()
+    }
+}
+
+async function deleteStudyRepo(repoId) {
+    const res = await fetch(`http://localhost:3000/repos/${repoId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        return {
+            deleted: true,
+            message: data.message
+        }
+    } else {
+        return {
+            deleted: false,
+            error: data.error
+        }
     }
 }
 

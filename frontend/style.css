@@ -9,6 +9,10 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.Wrapper {
+    position: relative;
+}
+
 .Home-Page-Wrapper, .Settings-Page-Wrapper, .Study-Repos-Page-Wrapper {
     display: flex;
     flex-direction: column;
@@ -161,6 +165,12 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.28);
 }
 
+.Top-Bar-Btns-Container div {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
 .Top-Bar-Btn {
     border: black 1.5px solid;
     border-radius: 6px;
@@ -170,10 +180,15 @@ body {
     white-space: nowrap;
     box-shadow: 0 2px 5px rgba(0,0,0,0.23);
     height: 100%;
+    color: black;
 }
 
 .Top-Bar-Btn:hover {
     opacity: 0.65;
+}
+
+.Top-Bar-Btn:disabled {
+    opacity: 0.6;
 }
 
 .Top-Bar-Btns-Container::-webkit-scrollbar {
@@ -368,11 +383,7 @@ body {
 .Study-Repo-Card-Name-Container {
     border-bottom: black 1.5px solid;
     padding: 12px 10px;
-}
-
-.Study-Repo-Card-Name-Container:hover {
-    opacity: 0.5;
-    cursor: pointer;
+    border-radius: 10px;
 }
 
 .Study-Repo-Card-Name-Container h1 {
@@ -392,7 +403,34 @@ body {
     font-size: 15px;
 }
 
-.Descriptio-Label {
+.Study-Repo-Card-Enter-Container {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+    padding: 10px;
+    border-top: black 1.5px solid;
+    border-radius: 10px;
+}
+
+.Study-Repo-Card-Enter-Container button {
+    border: black 1.5px solid;
+    background-color: white;
+    color: black;
+    border-radius: 6px;
+    padding: 5px 9px;
+    font-weight: bold;
+}
+
+.Disbaled-Btn-Style {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.Selected-Repos-Style {
+    opacity: 0.6;
+}
+
+.Description-Label {
     font-weight: bold;
 }
 
@@ -498,6 +536,82 @@ body {
     background-color: white;
     z-index: 1;
     line-height: 1;
+}
+
+.removeBtnNum {
+    padding-top: 0px;
+    font-size: 1.25em;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.Dialog-Wrapper {
+    background-color: rgba(255, 255, 255, 0.7);
+    position: fixed;
+    top: 0px;
+    z-index: 10001;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Dialog-Info-Box {
+    background-color: white;
+    border: black 1.5px solid;
+    border-radius: 8px;
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.35);
+    width: 350px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.dialogBoxTitle {
+    border-bottom: black 1.5px solid;
+    padding: 10px;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.dialogBoxInfo {
+    border-bottom: black 1.5px solid;
+    padding: 13px;
+    text-align: center;
+    font-size: 14.5px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+
+.dialogBoxBtns {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.dialogBoxBtns button {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    font-size: 16.5px;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+
+#comfirmDeleteBtn {
+    border-right: black 0.95px solid;
+}
+
+#confirmCancelBtn {
+    border-left: black 0.95px solid;
+}
+
+.Stop-Scroll {
+    overflow: hidden;
 }
 
 :focus {
