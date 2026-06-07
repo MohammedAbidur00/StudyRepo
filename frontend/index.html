@@ -223,8 +223,8 @@
                 </div>
                 <div class="Top-Bar-Btns-Container">
                     <div>
-                        <button class="Top-Bar-Btn"> + ADD FOLDER</button>
-                        <button class="Top-Bar-Btn"> + ADD NOTE</button>
+                        <button id="addFolderBtn" class="Top-Bar-Btn"> + ADD FOLDER</button>
+                        <button id="addNoteBtn" class="Top-Bar-Btn"> + ADD NOTE</button>
                         <button class="Top-Bar-Btn"> + ADD DOCUMENT</button>
                         <button class="Top-Bar-Btn">EDIT STUDYREPO</button>
                         <button class="Top-Bar-Btn">VIEW ANALYTICS</button>
@@ -234,10 +234,99 @@
             </div>
             <div id="studyRepoContentContainer" class="Page-Content"></div>
         </div>
+        <div id="studyRepoNotePageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="studyRepoNoteBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1 id="studyRepoNoteName" class="note-name"></h1>
+                    </div>
+                    <div class="Undo-Redo-Btns-Container">
+                        <button id="editorUndoBtn" class="Undo-Redo-Btn">UNDO</button>
+                        <button id="editorRedoBtn" class="Undo-Redo-Btn">REDO</button>
+                    </div>
+                </div>
+                <div class="Top-Bar-Btns-Container">
+                    <div>
+                        <button id="openEditorTextFormattingBtn" class="Top-Bar-Btn">Aa</button>
+                        <div id="editorTextFormattingBtns" class="editorToolGroup Hide">
+                            <button id="editorBoldBtn" class="Top-Bar-Btn">BOLD</button>
+                            <button id="editorItalicBtn" class="Top-Bar-Btn">ITALIC</button>
+                            <button id="editorUnderlineBtn" class="Top-Bar-Btn">UNDERLINE</button>
+                            <button id="editorStrikeBtn" class="Top-Bar-Btn">STRIKE</button>
+                            <button id="editorCodeBtn" class="Top-Bar-Btn">CODE</button>
+                            <button id="editorHighlightBtn" class="Top-Bar-Btn">HIGHLIGHT</button>
+                            <button id="editorSubscriptBtn" class="Top-Bar-Btn">SUBSCRIPT</button>
+                            <button id="editorSuperscriptBtn" class="Top-Bar-Btn">SUPERSCRIPT</button>
+                        </div>
+                        <button id="openEditorHeadingsBtn" class="Top-Bar-Btn">HEADINGS</button>
+                        <div id="editorHeadingsBtns" class="editorToolGroup Hide">
+                            <button id="editorH1Btn" class="Top-Bar-Btn">H1</button>
+                            <button id="editorH2Btn" class="Top-Bar-Btn">H2</button>
+                            <button id="editorH3Btn" class="Top-Bar-Btn">H3</button>
+                            <button id="editorH4Btn" class="Top-Bar-Btn">H4</button>
+                            <button id="editorH5Btn" class="Top-Bar-Btn">H5</button>
+                            <button id="editorH6Btn" class="Top-Bar-Btn">H6</button>
+                            <button id="editorParagraphBtn" class="Top-Bar-Btn">P</button>
+                        </div>
+                        <button id="openEditorListsBtn" class="Top-Bar-Btn">LISTS</button>
+                        <div id="editorListsBtns" class="editorToolGroup Hide">
+                            <button id="editorBulletListBtn" class="Top-Bar-Btn">BULLET LIST</button>
+                            <button id="editorOrderedListBtn" class="Top-Bar-Btn">ORDERED LIST</button>
+                            <button id="editorCheckboxListBtn" class="Top-Bar-Btn">CHECKBOX LIST</button>
+                        </div>
+                        <button id="openEditorBlocksBtn" class="Top-Bar-Btn">BLOCKS</button>
+                        <div id="editorBlocksBtns" class="editorToolGroup Hide">
+                            <button id="editorBlockquoteBtn" class="Top-Bar-Btn">BLOCKQUOTE</button>
+                            <button id="editorCodeBlockBtn" class="Top-Bar-Btn">CODE BLOCK</button>
+                            <button id="editorHorizontalLineBtn" class="Top-Bar-Btn">HORIZONTAL LINE</button>
+                        </div>
+                        <button id="openEditorAlignBtn" class="Top-Bar-Btn">ALIGNMENT</button>
+                        <div id="editorAlignBtns" class="editorToolGroup Hide">
+                            <button id="editorAlignLeftBtn" class="Top-Bar-Btn">LEFT</button>
+                            <button id="editorAlignCenterBtn" class="Top-Bar-Btn">CENTER</button>
+                            <button id="editorAlignRightBtn" class="Top-Bar-Btn">RIGHT</button>
+                            <button id="editorAlignJustifyBtn" class="Top-Bar-Btn">JUSTIFY</button>
+                        </div>
+                        <button id="openEditorClearBtn" class="Top-Bar-Btn">CLEAR</button>
+                        <div id="editorClearBtns" class="editorToolGroup Hide">
+                            <button id="editorClearFormattingBtn" class="Top-Bar-Btn">CLEAR FORMATTING</button>
+                            <button id="editorClearBlocksBtn" class="Top-Bar-Btn">CLEAR BLOCKS</button>
+                        </div>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
+                </div>
+            </div>
+            <div id="editor" class="Page-Content"></div>
+        </div>
+        <div id="studyRepoFolderPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="studyRepoFolderBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1 id="studyRepoFolderName"></h1>
+                    </div>
+                </div>
+                <div class="Top-Bar-Btns-Container">
+                    <div>
+                        <button id="addFolderBtn" class="Top-Bar-Btn"> + ADD FOLDER</button>
+                        <button id="addNoteBtn" class="Top-Bar-Btn"> + ADD NOTE</button>
+                        <button class="Top-Bar-Btn">EDIT FOLDER</button>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
+                </div>
+            </div>
+            <div id="folderContentContainer" class="Page-Content"></div>
+        </div>
     </div>
 
     <div id="dialogWrapper" class="Dialog-Wrapper Hide"></div>
     
-    <script src="index.js"></script>
+    <script type="module" src="index.js"></script>
+    <script type="module" src="./noteEditor.js"></script>
 </body>
 </html>
