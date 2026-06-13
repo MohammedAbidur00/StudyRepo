@@ -75,15 +75,36 @@ const deleteRepo = async (req, res) => {
 
 const getRepoFolders = async (req, res) => {
     try {
-        const { id } = req.params
+        const { id, parent } = req.params
         const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id])
         if (repo.rows.length === 0) {
             return res.status(404).json({ error: "Repo not found" })
         }
 
-        const folders = await pool.query('SELECT * FROM repofolders WHERE repo_id = $1', [id])
+        if (parent === "0") {
+            const folders = await pool.query('SELECT * FROM repofolders WHERE repo_id = $1 AND parent_folder_id IS NULL', [id])
+            res.status(200).json(folders.rows)
+        } else {
+            const folders = await pool.query('SELECT * FROM repofolders WHERE repo_id = $1 AND parent_folder_id = $2', [id, parent])
+            res.status(200).json(folders.rows)
+        }
 
-        res.status(200).json(folders.rows)
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+}
+
+const getRepoFolder = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const result = await pool.query('SELECT * FROM repofolders WHERE id = $1', [id])
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Folder not found" })
+        }
+
+        res.status(200).json(result.rows[0])
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: "Something went wrong" })
@@ -92,14 +113,19 @@ const getRepoFolders = async (req, res) => {
 
 const createRepoFolder = async (req, res) => {
     try {
-        const { id, folderName } = req.body
+        const { id, folderName , folderParent} = req.body
         const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id]);
         if (repo.rows.length === 0) {
             return res.status(404).json({ error: "Repo not found" })
         } 
-
-        const result = await pool.query('INSERT INTO repofolders (repo_id, foldername) VALUES ($1, $2) RETURNING *', [id, folderName])
-        res.status(201).json(result.rows[0]);
+        
+        if (folderParent === null) {
+            const result = await pool.query('INSERT INTO repofolders (repo_id, foldername) VALUES ($1, $2) RETURNING *', [id, folderName])
+            res.status(201).json(result.rows[0]);
+        } else {
+            const result = await pool.query('INSERT INTO repofolders (repo_id, foldername, parent_folder_id) VALUES ($1, $2, $3) RETURNING *', [id, folderName, folderParent])
+            res.status(201).json(result.rows[0]);
+        }
     } catch (err) {
         console.error(err)
         if (err.code === "23505") {
@@ -111,16 +137,34 @@ const createRepoFolder = async (req, res) => {
 
 const getNotes = async (req, res) => {
     try {
-        const { id } = req.params
-        console.log(req.params)
+        const { id, parent } = req.params
         const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id]);
         if (repo.rows.length === 0) {
             return res.status(404).json({ error: "Repo not found" })
         } 
+        
+        if (parent === "0") {
+            const notes = await pool.query('SELECT * FROM reponotes WHERE repo_id = $1 AND folder_id IS NULL', [id])
+            res.status(200).json(notes.rows)
+        } else {
+            const notes = await pool.query('SELECT * FROM reponotes WHERE repo_id = $1 AND folder_id = $2', [id, parent])
+            res.status(200).json(notes.rows)
+        }
+        
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+}
 
-        const notes = await pool.query('SELECT * FROM reponotes WHERE repo_id = $1', [id])
-        console.log(notes.rows)
-        res.status(200).json(notes.rows)
+const getNote = async (req, res) => {
+    try {
+        const { id } = req.params
+        const note = pool.query('SELECT * FROM reponotes WHERE id = $1', [id]);
+        if (note.rows.length === 0) {
+            return res.status(404).json({ error: "Note note found" })
+        }
+        res.status(200).json(note.rows[0]);
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: "Something went wrong" })
@@ -130,6 +174,7 @@ const getNotes = async (req, res) => {
 const createNote = async (req, res) => {
     try {
         const { id, title, folderId, content } = req.body
+        console.log(folderId)
         const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id]);
         if (repo.rows.length === 0) {
             return res.status(404).json({ error: "Repo not found" })
@@ -163,4 +208,4 @@ const updateNote = async (req, res) => {
     }
 }
 
-module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote }
+module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder }

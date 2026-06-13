@@ -225,7 +225,7 @@
                     <div>
                         <button id="addFolderBtn" class="Top-Bar-Btn"> + ADD FOLDER</button>
                         <button id="addNoteBtn" class="Top-Bar-Btn"> + ADD NOTE</button>
-                        <button class="Top-Bar-Btn"> + ADD DOCUMENT</button>
+                        <button id="addDocumentBtn" class="Top-Bar-Btn"> + ADD DOCUMENT</button>
                         <button class="Top-Bar-Btn">EDIT STUDYREPO</button>
                         <button class="Top-Bar-Btn">VIEW ANALYTICS</button>
                         <button class="Top-Bar-Btn material-icons">star</button>
@@ -313,14 +313,40 @@
                 </div>
                 <div class="Top-Bar-Btns-Container">
                     <div>
-                        <button id="addFolderBtn" class="Top-Bar-Btn"> + ADD FOLDER</button>
-                        <button id="addNoteBtn" class="Top-Bar-Btn"> + ADD NOTE</button>
+                        <button id="folderAddFolderBtn" class="Top-Bar-Btn"> + ADD FOLDER</button>
+                        <button id="folderAddNoteBtn" class="Top-Bar-Btn"> + ADD NOTE</button>
                         <button class="Top-Bar-Btn">EDIT FOLDER</button>
                         <button class="Top-Bar-Btn material-icons">star</button>
                     </div>
                 </div>
             </div>
             <div id="folderContentContainer" class="Page-Content"></div>
+        </div>
+        <div id="addDocumentPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="addDocumentBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>ADD DOCUMENT</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="Create-Study-Repo-Content">
+                <div class="Create-Repo-Inputs-Containers">
+                    <div class="Create-Repo-Inputs-Container">
+                        <div id="documentPreviewContainer" class="Document-Preview-Container Hide"></div>
+                        <label class="Document-Input" for="documentInput">ADD DOCUMENT</label>
+                        <input type="file" id="documentInput" accept=".pdf,.doc,.docx,.txt,image/*" multiple>
+                    </div>
+                    <div id="addDocumentPageMessageBox" class="Message-Box Hide"></div>
+                    <div class="Create-Repo-Btns-Container">
+                        <button id="saveDocumentBtn">SAVE</button>
+                        <button id="cancelDocumentBtn">CANCEL</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

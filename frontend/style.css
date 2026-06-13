@@ -540,7 +540,7 @@ body {
     width: 28px;
     height: 28px;
     top: 5px;
-    left: 305px;
+    right: 5px;
     font-size: 1.5em;
     display: flex;
     justify-content: center;
@@ -548,7 +548,8 @@ body {
     padding-top: 2px;
     font-weight: 100;
     background-color: white;
-    z-index: 1;
+    color: black;
+    z-index: 300;
     line-height: 1;
 }
 
@@ -636,11 +637,11 @@ body {
     color: black;
 }
 
-#comfirmDeleteBtn, #comfirmFolderNameBtn, #confirmNoteNameBtn {
+#comfirmDeleteBtn, #comfirmFolderNameBtn, #confirmNoteNameBtn, #comfirmFolderOfFolderNameBtn, #confirmNoteOfFolderNameBtn {
     border-right: black 0.95px solid;
 }
 
-#confirmCancelBtn, #confirmCancelFolderBtn, #confirmCancelNoteBtn {
+#confirmCancelBtn, #confirmCancelFolderBtn, #confirmCancelNoteBtn, #confirmCancelFolderOfFolderBtn, #confirmCancelNoteOfFolderBtn {
     border-left: black 0.95px solid;
 }
 
@@ -810,6 +811,68 @@ ul[data-type="taskList"] li > div > p {
     margin: 14px 0;
 }
 
+.Document-Input {
+    width: 100%;
+    padding: 10px;
+    border: black 1.5px solid;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 200;
+    font-size: 20px;
+    font-family: monospace;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+.Document-Preview-Container {
+    border: black 1.5px solid;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.Document-Preview-Container div {
+    position: relative;
+}
+
+.Document-Preview-Container img, .Document-Preview-Container iframe {
+    border: black 1.5px solid;
+    border-radius: 8px;
+    max-width: 400px;
+    object-fit: contain;
+}
+
+.Document-Container {
+    border: black 1.5px solid;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: stretch;
+    overflow-x: scroll;
+}
+
+.Document-Container div {
+    position: relative;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.Document-Container img, .Document-Container iframe {
+    border: black 1.5px solid;
+    border-radius: 8px;
+    max-width: 400px;
+    height: 200px;
+    object-fit: contain;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
 .Stop-Scroll {
     overflow: hidden;
 }
@@ -830,6 +893,10 @@ input[type="text"]::placeholder, input[type="password"]::placeholder, input[type
 input[type="text"]::selection, input[type="password"]::selection, input[type="email"]::selection, textarea::selection {
     color: white;
     background-color: black;
+}
+
+input[type="file"] {
+    display: none;
 }
 
 textarea {

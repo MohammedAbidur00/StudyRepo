@@ -87,6 +87,11 @@ function showNoteContent() {
     }
 }
 
+export function clearhistory() {
+    //const content = editor.getHTML();
+    //editor.commands.setContent(content, false);
+}
+
 function saveToLocalStorage(noteContent, noteName, noteId) {
     localStorage.setItem("noteName", noteName);
     localStorage.setItem("noteContent", noteContent);

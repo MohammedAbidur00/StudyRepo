@@ -1,4 +1,4 @@
-import { getNoteContent } from "./noteEditor";
+import { getNoteContent, clearhistory } from "./noteEditor";
 
 const headerCurrentUserLabelContainer = document.getElementById("headerCurrentUserLabelContainer");
 const loginPageWrapper = document.getElementById("loginPageWrapper");
@@ -10,12 +10,14 @@ const createStudyRepoPageWrapper = document.getElementById("createStudyRepoPageW
 const studyRepoPageWrapper = document.getElementById("studyRepoPageWrapper");
 const studyRepoNotePageWrapper = document.getElementById("studyRepoNotePageWrapper");
 const studyRepoFolderPageWrapper = document.getElementById("studyRepoFolderPageWrapper");
+const addDocumentPageWrapper = document.getElementById("addDocumentPageWrapper");
 
 const goToRegisterBtn = document.getElementById("goToRegisterBtn");
 const goToLoginBtn = document.getElementById("goToLoginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const titlebtn = document.getElementById("titlebtn");
 const addNoteBtn = document.getElementById("addNoteBtn");
+const addDocumentBtn = document.getElementById("addDocumentBtn");
 
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
@@ -36,6 +38,7 @@ const createStudyRepoBackBtn = document.getElementById("createStudyRepoBackBtn")
 const studyRepoBackBtn = document.getElementById("studyRepoBackBtn");
 const studyRepoNoteBackBtn = document.getElementById("studyRepoNoteBackBtn");
 const studyRepoFolderBackBtn = document.getElementById("studyRepoFolderBackBtn");
+const addDocumentBackBtn = document.getElementById("addDocumentBackBtn");
 
 const loginPageMessageBox = document.getElementById("loginPageMessageBox");
 const registerPageMessageBox = document.getElementById("registerPageMessageBox");
@@ -69,6 +72,14 @@ const dialogBox = document.getElementById("dialogBox");
 const deleteReposBtn = document.getElementById("deleteReposBtn");
 const addFolderBtn = document.getElementById("addFolderBtn");
 const studyRepoFolderName = document.getElementById("studyRepoFolderName");
+const folderAddFolderBtn = document.getElementById("folderAddFolderBtn");
+const folderAddNoteBtn = document.getElementById("folderAddNoteBtn");
+const documentInput = document.getElementById("documentInput");
+const container = document.getElementById("documentPreviewContainer");
+const saveDocumentBtn = document.getElementById("saveDocumentBtn");
+const cancelDocumentBtn = document.getElementById("cancelDocumentBtn");
+
+const addDocumentPageMessageBox = document.getElementById("addDocumentPageMessageBox");
 
 let repoToDelete = "";
 let isMultiSelect = false;
@@ -174,7 +185,6 @@ class createStudyRepoCards {
         if (state) {
             reposToDelete.push(this.repoId);
             const index = reposToDelete.indexOf(this.repoId)
-            console.log(reposToDelete);
             this.repoRemoveButton.classList.remove("Hide");
             this.repoRemoveButton.classList.add("removeBtnNum")
             this.repoRemoveButton.textContent = index;
@@ -182,7 +192,6 @@ class createStudyRepoCards {
         } else {
             const index = reposToDelete.indexOf(this.repoId)
             reposToDelete.splice(index, 1);
-            console.log(reposToDelete);
             this.repoRemoveButton.classList.add("Hide");
             this.repoRemoveButton.classList.remove("removeBtnNum")
             this.repoCard.classList.add("Selected-Repos-Style");
@@ -191,8 +200,16 @@ class createStudyRepoCards {
 }
 
 class buildFolderContent {
-    constructor(folderId) {
+    constructor(folderId, folderName, folderParent) {
         this.folderId = folderId
+        this.folderName = folderName
+        this.folderParent = folderParent
+
+        localStorage.setItem("previousFolder", this.folderParent)
+
+        folderContentContainer.innerHTML = "";
+
+        studyRepoFolderName.textContent = this.folderName;
 
         this.studyRepoFoldersContainer = document.createElement("div");
         this.studyRepoNotesContainer = document.createElement("div");
@@ -215,8 +232,8 @@ class buildFolderContent {
         this.studyRepoFoldersElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
         this.studyRepoNotesElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
 
-        this.studyRepoFoldersElementsContainer.id = "studyRepoFoldersContainer";
-        this.studyRepoNotesElementsContainer.id = "studyRepoNotesContainer";
+        this.studyRepoFoldersElementsContainer.id = "folderOfFoldersContainer";
+        this.studyRepoNotesElementsContainer.id = "notesOfFolderContainer";
 
         this.studyRepoFoldersTitle.textContent = "FOLDERS";
         this.studyRepoNotesTitle.textContent = "NOTES";
@@ -233,16 +250,31 @@ class buildFolderContent {
         folderContentContainer.appendChild(this.studyRepoFoldersContainer);
         folderContentContainer.appendChild(this.studyRepoNotesContainer);
 
-        this.getFolders(this.repoId);
-        this.getNotes(this.repoId);
+        this.getFolders(this.folderId);
+        this.getNotes(this.folderId);
+        this.checkDepth();
     }
 
     async getFolders(folderId) {
-        await getRepoFolders(folderId);
+        const currentRepo = localStorage.getItem("currentRepo")
+        //const currentFolder = localStorage.getItem("currentFolder")
+        await getRepoFolders(currentRepo, folderId);
     }
 
     async getNotes(folderId) {
-        await getRepoNotes(folderId);
+        const currentRepo = localStorage.getItem("currentRepo")
+        await getRepoNotes(currentRepo, folderId);
+    }
+
+    checkDepth() {
+        let currentDepth = parseInt(localStorage.getItem("folderDepth")) || 0;
+        if (currentDepth > 10) {
+            folderAddFolderBtn.classList.add("Hide");
+            this.studyRepoFoldersContainer.classList.add("Hide");
+        } else {
+            folderAddFolderBtn.classList.remove("Hide");
+            this.studyRepoFoldersContainer.classList.remove("Hide");
+        }
     }
 }
 
@@ -278,6 +310,7 @@ class buildStudyRepoContent {
         this.studyRepoFoldersElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
         this.studyRepoNotesElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
 
+        this.studyRepoDocumentsElementsContainer.id = "studyRepoDocumentsContainer"
         this.studyRepoFoldersElementsContainer.id = "studyRepoFoldersContainer";
         this.studyRepoNotesElementsContainer.id = "studyRepoNotesContainer";
 
@@ -303,6 +336,7 @@ class buildStudyRepoContent {
 
         this.getFolders(this.repoId);
         this.getNotes(this.repoId);
+        this.getDocuments();
     }
 
     async getFolders(repoId) {
@@ -312,12 +346,17 @@ class buildStudyRepoContent {
     async getNotes(repoId) {
         await getRepoNotes(repoId);
     }
+
+    async getDocuments() {
+        await getDocuments();
+    }
 }
 
 class createFolderCards {
-    constructor(folderId, folderName) {
+    constructor(folderId, folderName, folderCon) {
         this.folderId = folderId;
         this.folderName = folderName;
+        this.folderCon = folderCon;
 
         this.folderCard = document.createElement("div");
         this.folderCardIconCon = document.createElement("div");
@@ -358,27 +397,27 @@ class createFolderCards {
         this.folderCardName.classList.add("Folder-Card-Name");
         this.folderCardStats.classList.add("Folder-Card-Stats");
 
-        const studyRepoFoldersContainer = document.getElementById("studyRepoFoldersContainer");
-        studyRepoFoldersContainer.appendChild(this.folderCard);
+        this.folderCon.appendChild(this.folderCard);
 
         this.folderCard.addEventListener("click", async () => {
-            localStorage.setItem("currentFolder", this.folderName)
+            folderContentContainer.innerHTML = "";
+            let currentFolderDepth = localStorage.getItem("folderDepth");
+            localStorage.setItem("folderDepth", ++currentFolderDepth);
+            const currentRepo = localStorage.getItem("currentRepo")
+            localStorage.setItem("currentFolder", this.folderId);
             setCurrentPage("folderPage");
             await showCurrentPage();
-            new buildFolderContent(this.folderId)
+            await getRepoFolder();
+            await getRepoFolders(currentRepo, this.folderId);
         })
     }
 }
 
 class createNoteCards {
-    constructor(noteId, noteName, noteContent) {
+    constructor(noteId, noteName, noteContent, noteCon) {
         this.noteId = noteId;
         this.noteName = noteName;
         this.noteContent = noteContent;
-
-        console.log(this.noteId)
-
-        console.log(typeof(this.noteContent))
 
         this.noteCard = document.createElement("div");
         this.noteCardIconCon = document.createElement("div");
@@ -411,8 +450,7 @@ class createNoteCards {
         this.noteCardName.classList.add("Folder-Card-Name");
         this.noteCardStats.classList.add("Folder-Card-Stats");
 
-        const studyReponotesContainer = document.getElementById("studyRepoNotesContainer");
-        studyReponotesContainer.appendChild(this.noteCard);
+        noteCon.appendChild(this.noteCard);
 
         this.noteCard.addEventListener("click", async () => {
             setCurrentPage("noteEditorPage");
@@ -423,6 +461,28 @@ class createNoteCards {
                 getNoteContent(this.noteContent, this.noteName, this.noteId);
             }
         })
+    }
+}
+
+class createDocumentCards {
+    constructor(fileId, fileName, fileUrl, fileType, fileSize) {
+        this.fileId = fileId;
+        this.fileName = fileName;
+        this.fileUrl = fileUrl;
+        this.fileType = fileType;
+        this.fileSize = fileSize;
+
+        const studyRepoDocumentsContainer = document.getElementById("studyRepoDocumentsContainer");
+
+        this.fileContainer = document.createElement("div");
+        studyRepoDocumentsContainer.classList.add("Document-Container");
+        if (this.fileType.startsWith("image/")) {
+            this.fileImage = document.createElement("img");
+            this.fileImage.src = this.fileUrl;
+            this.fileContainer.appendChild(this.fileImage);
+        }
+
+        studyRepoDocumentsContainer.appendChild(this.fileContainer);
     }
 }
 
@@ -473,6 +533,24 @@ class createDialog {
             this.dialogBoxInputCon.classList.add("dialogBoxInputCon");
             this.dialogBoxInput = document.createElement("input");
             this.dialogBoxInput.id = "noteNameInput";
+            this.dialogBoxInput.placeholder = "Enter a note name"
+            this.dialogBoxInputCon.appendChild(this.dialogBoxInput);
+            this.dialogInfoBox.appendChild(this.dialogBoxInputCon);
+        }
+        if (this.dialogType === "folderOfFolderNameInput") {
+            this.dialogBoxInputCon = document.createElement("div");
+            this.dialogBoxInputCon.classList.add("dialogBoxInputCon");
+            this.dialogBoxInput = document.createElement("input");
+            this.dialogBoxInput.id = "folderOfFolderNameInput";
+            this.dialogBoxInput.placeholder = "Enter a folder name"
+            this.dialogBoxInputCon.appendChild(this.dialogBoxInput);
+            this.dialogInfoBox.appendChild(this.dialogBoxInputCon);
+        }
+        if (this.dialogType === "noteOfFolderNameInput") {
+            this.dialogBoxInputCon = document.createElement("div");
+            this.dialogBoxInputCon.classList.add("dialogBoxInputCon");
+            this.dialogBoxInput = document.createElement("input");
+            this.dialogBoxInput.id = "noteOfFolderNameInput";
             this.dialogBoxInput.placeholder = "Enter a note name"
             this.dialogBoxInputCon.appendChild(this.dialogBoxInput);
             this.dialogInfoBox.appendChild(this.dialogBoxInputCon);
@@ -536,6 +614,7 @@ createStudyRepoBackBtn.addEventListener("click", async () => {
 })
 
 studyRepoNoteBackBtn.addEventListener("click", async () => {
+    clearhistory();
     localStorage.removeItem("noteId");
     localStorage.removeItem("noteName");
     localStorage.removeItem("noteContent");
@@ -544,8 +623,35 @@ studyRepoNoteBackBtn.addEventListener("click", async () => {
 })
 
 studyRepoFolderBackBtn.addEventListener("click", async () => {
+    let currentFolderDepth = parseInt(localStorage.getItem("folderDepth")) || 0;
+    localStorage.setItem("folderDepth", currentFolderDepth - 1);
+    let previousFolder = localStorage.getItem("previousFolder");
+    let currentRepo = localStorage.getItem("currentRepo");
+    folderContentContainer.innerHTML = "";
+    if (previousFolder === "null") {
+        setCurrentPage("studyRepoPage");
+        await showCurrentPage();
+    } else {
+        setCurrentPage("folderPage");
+        localStorage.setItem("currentFolder", previousFolder);
+        await showCurrentPage();
+        await getRepoFolder();
+        await getRepoFolders(currentRepo, previousFolder);
+    }
+})
+
+addDocumentBackBtn.addEventListener("click", async () => {
+    clearPreviews();
     setCurrentPage("studyRepoPage");
     await showCurrentPage();
+})
+
+cancelDocumentBtn.addEventListener("click", () => {
+    clearPreviews();
+})
+
+saveDocumentBtn.addEventListener("click", async () => {
+    await uploadDocuments();
 })
 
 titlebtn.addEventListener("click", () => {
@@ -625,6 +731,132 @@ loginButton.addEventListener("click", async () => {
         }
     }
 });
+
+//START OF DOCUMENT INPUT SECTION
+
+let selectedFiles = [];
+let objectURLs = [];
+let fileIdCounter = 0;
+
+documentInput.addEventListener("change", (e) => {
+    const newFiles = Array.from(e.target.files).map(file => ({
+        id: fileIdCounter++,  // unique id per file
+        file
+      }));
+    selectedFiles = [...selectedFiles, ...newFiles]
+    renderPreviews();
+    e.target.value = '';
+})
+
+function renderPreviews() {
+    container.innerHTML = ''
+    container.classList.remove("Hide");
+  
+    selectedFiles.forEach(({ id, file, objectURL }) => {
+      const item = document.createElement('div')
+  
+      if (file.type.startsWith('image/')) {
+        if (!objectURL) {
+          objectURL = URL.createObjectURL(file)
+          selectedFiles.find(f => f.id === id).objectURL = objectURL
+        }
+        const img = document.createElement('img')
+        img.src = objectURL
+        item.appendChild(img)
+      } else if (file.type === 'application/pdf') {
+        if (!objectURL) {
+          objectURL = URL.createObjectURL(file)
+          selectedFiles.find(f => f.id === id).objectURL = objectURL
+        }
+        const iframe = document.createElement('iframe')
+        iframe.src = objectURL + '#toolbar=0&navpanes=0'
+        item.appendChild(iframe)
+      } else {
+        const icon = document.createElement('p')
+        icon.textContent = file.name
+        item.appendChild(icon)
+      }
+  
+      const removeBtn = document.createElement('button')
+      removeBtn.classList.add("removeBtn");
+      removeBtn.textContent = '×'
+      removeBtn.addEventListener('click', () => {
+        removeFile(id)
+        if (selectedFiles.length === 0) {
+            container.classList.add("Hide");
+        }
+      })
+      item.appendChild(removeBtn)
+  
+      container.appendChild(item)
+    })
+}
+
+function removeFile(id) {
+    // revoke URL for the removed file
+    const removed = selectedFiles.find(f => f.id === id)
+    if (removed && removed.objectURL) {
+      URL.revokeObjectURL(removed.objectURL)
+    }
+  
+    selectedFiles = selectedFiles.filter(f => f.id !== id)
+    renderPreviews()
+}
+
+function clearPreviews() {
+    objectURLs.forEach(url => URL.revokeObjectURL(url))
+    objectURLs = []
+    selectedFiles = []
+    container.innerHTML = "";
+    container.classList.add("Hide");
+}
+
+async function uploadDocuments() {
+    const currentRepo = parseInt(localStorage.getItem("currentRepo"));
+    const formData = new FormData();
+    selectedFiles.forEach(({ file }) => formData.append('files', file))
+    formData.append('repoId', currentRepo)
+
+    const res = await fetch('http://localhost:3000/files/upload', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        showMessageBox(addDocumentPageMessageBox, "add Document successfully, going back to studyrepo...");
+    } else {
+        showMessageBox(addDocumentPageMessageBox, data.error || "Something went wrong");
+    }
+}
+
+async function getDocuments() {
+    const currentRepo = parseInt(localStorage.getItem("currentRepo"));
+    const res = await fetch(`http://localhost:3000/files/${currentRepo}`, {
+        credentials: 'include'
+    })
+
+    const studyRepoDocumentsContainer = document.getElementById("studyRepoDocumentsContainer");
+    const placeholderMessageCon = document.createElement("div");
+    const placeholderMessage = document.createElement("p");
+    placeholderMessage.textContent = "No documents yet";
+    placeholderMessageCon.appendChild(placeholderMessage);
+    const data = await res.json();
+
+    if (res.ok) {
+        if (data.length === 0) {
+            studyRepoDocumentsContainer.appendChild(placeholderMessageCon);
+        } else {
+            for (const obj of data) {
+                new createDocumentCards(obj.id, obj.filename, obj.url, obj.file_type, obj.file_size)
+            }
+        }
+    }
+}
+
+//END OF DOCUMENT INPUT SECTION
 
 function leaveEditMode() {
     isMultiSelect = false;
@@ -794,11 +1026,27 @@ document.addEventListener("click", async (event) => {
         dialogWrapper.classList.add("Hide")
         document.body.style.overflowY = "scroll";
         const currentRepo = localStorage.getItem("currentRepo");
-        console.log(currentRepo)
+        const currentFolder = localStorage.getItem("currentFolder")
         await createRepoNote(currentRepo, noteNameInput.value)
     } else if (event.target.id === "confirmCancelNoteBtn") {
         dialogWrapper.classList.add("Hide")
         document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "confirmCancelFolderOfFolderBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "comfirmFolderOfFolderNameBtn") {
+        const currentFolder = localStorage.getItem("currentFolder");
+        const currentRepo = localStorage.getItem("currentRepo");
+        await createRepoFolder(currentRepo, folderOfFolderNameInput.value, currentFolder);
+    } else if (event.target.id === "confirmCancelNoteOfFolderBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "confirmNoteOfFolderNameBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+        const currentRepo = localStorage.getItem("currentRepo");
+        const currentFolder = localStorage.getItem("currentFolder")
+        await createRepoNote(currentRepo, noteOfFolderNameInput.value, currentFolder);
     }
 })
 
@@ -846,7 +1094,6 @@ addFolderBtn.addEventListener("click", () => {
     dialogWrapper.classList.remove("Hide")
     dialogWrapper.innerHTML = "";
     document.body.style.overflow = "hidden";
-    repoToDelete = this.repoId;
     const dialogText = "Enter a name for your folder into the input box below."
     const btnsArr = [
         {
@@ -859,6 +1106,42 @@ addFolderBtn.addEventListener("click", () => {
         }
     ]
     new createDialog(dialogText, btnsArr, "folderNameInput")
+})
+
+folderAddFolderBtn.addEventListener("click", () => {
+    dialogWrapper.classList.remove("Hide")
+    dialogWrapper.innerHTML = "";
+    document.body.style.overflow = "hidden";
+    const dialogText = "Enter a name for your folder into the input box below."
+    const btnsArr = [
+        {
+            btnId: "comfirmFolderOfFolderNameBtn",
+            btnText: "Done",
+        },
+        {
+            btnId: "confirmCancelFolderOfFolderBtn",
+            btnText: "Cancel"
+        }
+    ]
+    new createDialog(dialogText, btnsArr, "folderOfFolderNameInput");
+})
+
+folderAddNoteBtn.addEventListener("click", () => {
+    dialogWrapper.classList.remove("Hide")
+    dialogWrapper.innerHTML = "";
+    document.body.style.overflow = "hidden";
+    const dialogText = "Enter a name for your note into the input box below."
+    const btnsArr = [
+        {
+            btnId: "confirmNoteOfFolderNameBtn",
+            btnText: "Done",
+        },
+        {
+            btnId: "confirmCancelNoteOfFolderBtn",
+            btnText: "Cancel"
+        }
+    ]
+    new createDialog(dialogText, btnsArr, "noteOfFolderNameInput");
 })
 
 addNoteBtn.addEventListener("click", async () => {
@@ -877,6 +1160,11 @@ addNoteBtn.addEventListener("click", async () => {
         }
     ]
     new createDialog(dialogText, btnsArr, "noteNameInput")
+})
+
+addDocumentBtn.addEventListener("click", async () => {
+    setCurrentPage("addDocumentPage")
+    await showCurrentPage();
 })
 
 async function createStudyRepo(name, description) {
@@ -930,7 +1218,6 @@ async function populateSettingsInfo() {
 
 async function getStudyRepo() {
     const repoId = localStorage.getItem("currentRepo")
-    console.log(repoId)
     const res = await fetch(`http://localhost:3000/repos/${repoId}`, {
         credentials: 'include'
     })
@@ -938,7 +1225,9 @@ async function getStudyRepo() {
     const data = await res.json();
 
     if (res.ok) {
-        console.log(data)
+        localStorage.setItem("folderDepth", 0);
+        localStorage.setItem("currentFolder", null);
+        localStorage.setItem("previousFolder", null);
         studyRepoName.textContent = data[0].reponame.toUpperCase();
         studyRepoContentContainer.innerHTML = "";
         new buildStudyRepoContent(data[0].id);
@@ -990,35 +1279,67 @@ async function getReposSummary() {
     }
 }
 
-async function getRepoFolders(repoId) {
-    const res = await fetch(`http://localhost:3000/repos/${repoId}/folders`, {
+async function getRepoFolders(repoId, folderParent = 0) {
+    const res = await fetch(`http://localhost:3000/repos/${repoId}/${folderParent}/folders`, {
         credentials: 'include'
     })
 
     const folders = await res.json();
 
+    const folderOfFoldersContainer = document.getElementById("folderOfFoldersContainer");
+    const studyRepoFoldersContainer = document.getElementById("studyRepoFoldersContainer");
+    let foldersCon = studyRepoFoldersContainer
+
     if (res.ok) {
         if (folders.length === 0) {
-            const studyRepoFoldersContainer = document.getElementById("studyRepoFoldersContainer");
             const placeholderMessageCon = document.createElement("div")
             const placeholderMessage = document.createElement("p")
             placeholderMessage.textContent = "No folders yet"
 
             placeholderMessageCon.appendChild(placeholderMessage)
 
-            studyRepoFoldersContainer.appendChild(placeholderMessageCon)
+            if (folderParent === 0) {
+                studyRepoFoldersContainer.appendChild(placeholderMessageCon);
+            } else {
+                folderOfFoldersContainer.innerHTML = "";
+                folderOfFoldersContainer.appendChild(placeholderMessageCon);
+            }
         } else {
+            if (folderParent === 0) {
+                folderParent = null;
+            } else {
+                folderOfFoldersContainer.innerHTML = "";
+                foldersCon = folderOfFoldersContainer
+            }
             for (const folder of folders) {
-                new createFolderCards(folder.id, folder.foldername);
+                if (folder.parent_folder_id === folderParent) {
+                    new createFolderCards(folder.id, folder.foldername, foldersCon);
+                }
             }
         }
     }
 }
 
-async function createRepoFolder(repoId, folderName) {
+async function getRepoFolder() {
+    const folderId = localStorage.getItem("currentFolder");
+    const res = await fetch(`http://localhost:3000/repos/${folderId}/folder`, {
+        credentials: 'include'
+    })
+
+    const folder = await res.json();
+
+    if (res.ok) {
+        new buildFolderContent(folder.id, folder.foldername, folder.parent_folder_id);
+    } else {
+        return folder.error
+    }
+}
+
+async function createRepoFolder(repoId, folderName, parent = null) {
     const payload = {
         id: repoId,
-        folderName: folderName
+        folderName: folderName,
+        folderParent: parent
     }
 
     const res = await fetch("http://localhost:3000/repos/folders", {
@@ -1058,31 +1379,40 @@ async function createRepoFolder(repoId, folderName) {
     }
 }
 
-async function getRepoNotes(repoId) {
-    const res = await fetch(`http://localhost:3000/repos/${repoId}/notes`, {
+async function getRepoNotes(repoId, parentFolder = 0) {
+    const res = await fetch(`http://localhost:3000/repos/${repoId}/${parentFolder}/notes`, {
         credentials: 'include'
     })
 
     const notes = await res.json();
+    const studyRepoNotesContainer = document.getElementById("studyRepoNotesContainer");
+    const notesOfFolderContainer = document.getElementById("notesOfFolderContainer");
+    let notesCon = studyRepoNotesContainer;
 
-    console.log(repoId)
-
-    console.log(notes.length)
     if (res.ok) {
         if (notes.length === 0) {
-            const studyRepoNotesContainer = document.getElementById("studyRepoNotesContainer");
             const placeholderMessageCon = document.createElement("div")
             const placeholderMessage = document.createElement("p")
             placeholderMessage.textContent = "No notes yet"
 
             placeholderMessageCon.appendChild(placeholderMessage)
 
-            studyRepoNotesContainer.appendChild(placeholderMessageCon)
+            if (parentFolder === 0) {
+                studyRepoNotesContainer.appendChild(placeholderMessageCon);
+            } else {
+                notesOfFolderContainer.innerHTML = "";
+                notesOfFolderContainer.appendChild(placeholderMessageCon);
+            }
         } else {
+            if (parentFolder === 0) {
+                parentFolder = null;
+            } else {
+                notesOfFolderContainer.innerHTML = "";
+                notesCon = notesOfFolderContainer;
+            }
             for (const note of notes) {
-                console.log(note)
-                if (note.folder_id === null) {
-                    new createNoteCards(note.id, note.title, note.content);
+                if (note.folder_id === parentFolder) {
+                    new createNoteCards(note.id, note.title, note.content, notesCon);
                 }
             }
         }
@@ -1096,7 +1426,6 @@ async function createRepoNote(repoId, title, folderId = null, content = null) {
         folderId: folderId,
         content: content
     }
-    console.log(payload);
 
     const res = await fetch("http://localhost:3000/repos/notes", {
         method: 'POST',
@@ -1203,7 +1532,7 @@ function showMessageBox(messageBoxEl, message) {
 }
 
 function hideAllPages() {
-    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper];
+    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper, addDocumentPageWrapper];
     Pages.forEach(page => {
         page.classList.add("Hide");
     })
@@ -1248,8 +1577,10 @@ async function showCurrentPage() {
     } else if (currentPage === "noteEditorPage") {
         studyRepoNotePageWrapper.classList.remove("Hide");
     } else if (currentPage === "folderPage") {
-        studyRepoFolderPageWrapper.classList.remove("Hide");
-        studyRepoFolderName.textContent = localStorage.getItem("currentFolder");
+        studyRepoFolderPageWrapper.classList.remove("Hide")
+        await getRepoFolder();
+    } else if (currentPage === "addDocumentPage") {
+        addDocumentPageWrapper.classList.remove("Hide");
     } else {
         loginPageWrapper.classList.remove("Hide");
     }
