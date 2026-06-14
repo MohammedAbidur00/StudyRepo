@@ -114,7 +114,7 @@ const getRepoFolder = async (req, res) => {
 const createRepoFolder = async (req, res) => {
     try {
         const { id, folderName , folderParent} = req.body
-        const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id]);
+        const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id])
         if (repo.rows.length === 0) {
             return res.status(404).json({ error: "Repo not found" })
         } 
@@ -132,6 +132,26 @@ const createRepoFolder = async (req, res) => {
             return res.status(409).json({ error: 'Folder with selected foldername in the current directory already exists' })
         }
         res.status(500).json({ error: "Something went wrong" })
+    }
+}
+
+const deleteRepoFolder = async (req, res) => {
+    try {
+        const { id, folderId } = req.params
+        const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id])
+        if (repo.rows.length === 0) {
+            return res.status(404).json({ error: "Repo not found" })
+        }
+
+        const result = await pool.query('DELETE FROM repofolders WHERE id = $1 RETURNING *', [folderId])
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Folder not found" })
+        }
+
+        res.status(200).json({ message: "Folder successfully deleted."});
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Somethig went wrong" })
     }
 }
 
@@ -208,4 +228,24 @@ const updateNote = async (req, res) => {
     }
 }
 
-module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder }
+const noteRepoFolder = async (req, res) => {
+    try {
+        const { id, noteId } = req.params
+        const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id])
+        if (repo.rows.length === 0) {
+            return res.status(404).json({ error: "Repo not found" })
+        }
+
+        const result = await pool.query('DELETE FROM reponotes WHERE id = $1 RETURNING *', [noteId])
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Note not found" })
+        }
+
+        res.status(200).json({ message: "Note successfully deleted."});
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Somethig went wrong" })
+    }
+}
+
+module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder, deleteRepoFolder, noteRepoFolder }

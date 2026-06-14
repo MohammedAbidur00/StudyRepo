@@ -1,3 +1,4 @@
+import { locales } from "zod";
 import { getNoteContent, clearhistory } from "./noteEditor";
 
 const headerCurrentUserLabelContainer = document.getElementById("headerCurrentUserLabelContainer");
@@ -78,12 +79,21 @@ const documentInput = document.getElementById("documentInput");
 const container = document.getElementById("documentPreviewContainer");
 const saveDocumentBtn = document.getElementById("saveDocumentBtn");
 const cancelDocumentBtn = document.getElementById("cancelDocumentBtn");
+const editStudyRepoCancelBtn = document.getElementById("editStudyRepoCancelBtn");
+const studyRepoEditBtns = document.getElementById("studyRepoEditBtns");
 
 const addDocumentPageMessageBox = document.getElementById("addDocumentPageMessageBox");
 
 let repoToDelete = "";
 let isMultiSelect = false;
 let reposToDelete = [];
+
+const editStudyRepoBtn = document.getElementById("editStudyRepoBtn");
+let studyRepoEditMode = false;
+
+let folderToDelete = "";
+let noteToDelete = "";
+let documentToDelete = "";
 
 class createStudyRepoCards {
     constructor(repoId, repoName, repoDescription) {
@@ -388,7 +398,6 @@ class createFolderCards {
         this.folderCard.appendChild(this.folderCardInfoCon);
         this.folderCardInfoCon.appendChild(this.folderCardNameCon);
         this.folderCardInfoCon.appendChild(this.folderCardStatsCon);
-        this.folderCard.appendChild(this.folderCardActionCon);
 
         this.folderCard.classList.add("Folder-Card");
         this.folderCardIconCon.classList.add("Folder-Card-Icon-Con");
@@ -396,6 +405,20 @@ class createFolderCards {
         this.folderCardInfoCon.classList.add("Folder-Card-Info-Con");
         this.folderCardName.classList.add("Folder-Card-Name");
         this.folderCardStats.classList.add("Folder-Card-Stats");
+
+        this.folderRemoveBtnCon = document.createElement("div");
+        this.folderRemoveBtnCon.classList.add("noteRemoveBtnCon")
+
+        this.folderRemoveBtn = document.createElement("button");
+        this.folderRemoveBtn.classList.add("studyRepoElementremoveBtn")
+        this.folderRemoveBtn.classList.add("Hide");
+        this.folderRemoveBtn.textContent = "×";
+
+        this.folderRemoveBtnCon.appendChild(this.folderRemoveBtn);
+
+        this.folderCard.appendChild(this.folderRemoveBtnCon)
+
+        this.folderCard.appendChild(this.folderCardActionCon);
 
         this.folderCon.appendChild(this.folderCard);
 
@@ -409,6 +432,26 @@ class createFolderCards {
             await showCurrentPage();
             await getRepoFolder();
             await getRepoFolders(currentRepo, this.folderId);
+        })
+
+        this.folderRemoveBtn.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            folderToDelete = this.folderId;
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            const dialogText = "Are you sure you want to delete this folder?, If so it will be deleted permanently and you won't be able to get it back."
+            const btnsArr = [
+                {
+                    btnId: "comfirmFolderDeleteBtn",
+                    btnText: "Delete",
+                },
+                {
+                    btnId: "confirmFolderCancelBtn",
+                    btnText: "Cancel"
+                }
+            ]
+            new createDialog(dialogText, btnsArr)
         })
     }
 }
@@ -450,6 +493,18 @@ class createNoteCards {
         this.noteCardName.classList.add("Folder-Card-Name");
         this.noteCardStats.classList.add("Folder-Card-Stats");
 
+        this.noteRemoveBtnCon = document.createElement("div");
+        this.noteRemoveBtnCon.classList.add("noteRemoveBtnCon")
+
+        this.noteRemoveBtn = document.createElement("button");
+        this.noteRemoveBtn.classList.add("studyRepoElementremoveBtn")
+        this.noteRemoveBtn.classList.add("Hide");
+        this.noteRemoveBtn.textContent = "×";
+
+        this.noteRemoveBtnCon.appendChild(this.noteRemoveBtn);
+
+        this.noteCard.appendChild(this.noteRemoveBtnCon)
+
         noteCon.appendChild(this.noteCard);
 
         this.noteCard.addEventListener("click", async () => {
@@ -460,6 +515,26 @@ class createNoteCards {
             } else {
                 getNoteContent(this.noteContent, this.noteName, this.noteId);
             }
+        })
+
+        this.noteRemoveBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            noteToDelete = this.noteId;
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            const dialogText = "Are you sure you want to delete this note?, If so it will be deleted permanently and you won't be able to get it back."
+            const btnsArr = [
+                {
+                    btnId: "comfirmNoteDeleteBtn",
+                    btnText: "Delete",
+                },
+                {
+                    btnId: "confirmNoteCancelBtn",
+                    btnText: "Cancel"
+                }
+            ]
+            new createDialog(dialogText, btnsArr)
         })
     }
 }
@@ -481,8 +556,34 @@ class createDocumentCards {
             this.fileImage.src = this.fileUrl;
             this.fileContainer.appendChild(this.fileImage);
         }
+        this.removeBtn = document.createElement("button");
+        this.removeBtn.classList.add("removeBtn")
+        this.removeBtn.classList.add("studyRepoElementremoveBtn")
+        this.removeBtn.textContent = "×";
+        this.removeBtn.classList.add("Hide");
+        this.fileContainer.appendChild(this.removeBtn)
 
         studyRepoDocumentsContainer.appendChild(this.fileContainer);
+
+        this.removeBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            documentToDelete = this.fileId;
+            dialogWrapper.classList.remove("Hide")
+            dialogWrapper.innerHTML = "";
+            document.body.style.overflow = "hidden";
+            const dialogText = "Are you sure you want to delete this document?, If so it will be deleted permanently and you won't be able to get it back."
+            const btnsArr = [
+                {
+                    btnId: "comfirmDocumentDeleteBtn",
+                    btnText: "Delete",
+                },
+                {
+                    btnId: "confirmDocumentCancelBtn",
+                    btnText: "Cancel"
+                }
+            ]
+            new createDialog(dialogText, btnsArr)
+        })
     }
 }
 
@@ -656,6 +757,36 @@ saveDocumentBtn.addEventListener("click", async () => {
 
 titlebtn.addEventListener("click", () => {
     location.reload();
+})
+
+editStudyRepoCancelBtn.addEventListener("click", () => {
+    studyRepoEditMode = false;
+    document.querySelectorAll(".studyRepoElementremoveBtn").forEach(btn => {
+        btn.classList.add("Hide");
+    })
+    document.querySelectorAll(".Folder-Card-Action-Con").forEach(btn => {
+        btn.classList.remove("Hide");
+    })
+    document.querySelectorAll(".Folder-Card").forEach(card => {
+        card.style.pointerEvents = "auto";
+    })
+    editStudyRepoBtn.classList.remove("Hide");
+    studyRepoEditBtns.classList.add("Hide");
+})
+
+editStudyRepoBtn.addEventListener("click", () => {
+    studyRepoEditMode = true;
+    document.querySelectorAll(".studyRepoElementremoveBtn").forEach(btn => {
+        btn.classList.remove("Hide");
+    })
+    document.querySelectorAll(".Folder-Card-Action-Con").forEach(btn => {
+        btn.classList.add("Hide");
+    })
+    document.querySelectorAll(".Folder-Card").forEach(card => {
+        card.style.pointerEvents = "none";
+    })
+    editStudyRepoBtn.classList.add("Hide");
+    studyRepoEditBtns.classList.remove("Hide");
 })
 
 editReposBtn.addEventListener("click", async () => {
@@ -841,6 +972,7 @@ async function getDocuments() {
     const studyRepoDocumentsContainer = document.getElementById("studyRepoDocumentsContainer");
     const placeholderMessageCon = document.createElement("div");
     const placeholderMessage = document.createElement("p");
+    placeholderMessage.classList.add("placeholderMessageElements");
     placeholderMessage.textContent = "No documents yet";
     placeholderMessageCon.appendChild(placeholderMessage);
     const data = await res.json();
@@ -1047,6 +1179,21 @@ document.addEventListener("click", async (event) => {
         const currentRepo = localStorage.getItem("currentRepo");
         const currentFolder = localStorage.getItem("currentFolder")
         await createRepoNote(currentRepo, noteOfFolderNameInput.value, currentFolder);
+    } else if (event.target.id === "confirmFolderCancelBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "comfirmFolderDeleteBtn") {
+        await deleteRepoFolder(folderToDelete);
+    } else if (event.target.id === "confirmNoteCancelBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "comfirmNoteDeleteBtn") {
+        await deleteRepoNote(noteToDelete);
+    } else if (event.target.id === "confirmDocumentCancelBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "comfirmDocumentDeleteBtn") {
+        await deleteRepoDocument(documentToDelete);
     }
 })
 
@@ -1294,6 +1441,7 @@ async function getRepoFolders(repoId, folderParent = 0) {
         if (folders.length === 0) {
             const placeholderMessageCon = document.createElement("div")
             const placeholderMessage = document.createElement("p")
+            placeholderMessage.classList.add("placeholderMessageElements");
             placeholderMessage.textContent = "No folders yet"
 
             placeholderMessageCon.appendChild(placeholderMessage)
@@ -1367,8 +1515,44 @@ async function createRepoFolder(repoId, folderName, parent = null) {
         dialogWrapper.classList.remove("Hide")
         dialogWrapper.innerHTML = "";
         document.body.style.overflow = "hidden";
-        console.log(data.error)
         const dialogText = data.error;
+        const btnArr = [
+            {
+                btnId: "dialogOkayBtn",
+                btnText: "Okay"
+            }
+        ]
+        new createDialog(dialogText, btnArr);
+    }
+}
+
+async function deleteRepoFolder(folderId) {
+    const currentRepo = parseInt(localStorage.getItem("currentRepo"))
+
+    const res = await fetch(`http://localhost:3000/repos/${currentRepo}/${folderId}/folders`, {
+        method: 'DELETE',
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = "Folder deleted successfully."
+        const btnArr = [
+            {
+                btnId: "dialogOkayBtn",
+                btnText: "Okay"
+            }
+        ]
+        new createDialog(dialogText, btnArr);
+    } else {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = data.error  || "Something went wrong";
         const btnArr = [
             {
                 btnId: "dialogOkayBtn",
@@ -1393,6 +1577,7 @@ async function getRepoNotes(repoId, parentFolder = 0) {
         if (notes.length === 0) {
             const placeholderMessageCon = document.createElement("div")
             const placeholderMessage = document.createElement("p")
+            placeholderMessage.classList.add("placeholderMessageElements");
             placeholderMessage.textContent = "No notes yet"
 
             placeholderMessageCon.appendChild(placeholderMessage)
@@ -1463,6 +1648,80 @@ export async function updateRepoNote(id, noteId, noteName, noteContent) {
         console.log("saved")
     } else {
         console.log(data.error)
+    }
+}
+
+async function deleteRepoNote(noteId) {
+    const currentRepo = parseInt(localStorage.getItem("currentRepo"))
+
+    const res = await fetch(`http://localhost:3000/repos/${currentRepo}/${noteId}/notes`, {
+        method: 'DELETE',
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = "Note deleted successfully."
+        const btnArr = [
+            {
+                btnId: "dialogOkayBtn",
+                btnText: "Okay"
+            }
+        ]
+        new createDialog(dialogText, btnArr);
+    } else {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = data.error || "Something went wrong";
+        const btnArr = [
+            {
+                btnId: "dialogOkayBtn",
+                btnText: "Okay"
+            }
+        ]
+        new createDialog(dialogText, btnArr);
+    }
+}
+
+async function deleteRepoDocument(fileId) {
+    const currentRepo = parseInt(localStorage.getItem("currentRepo"))
+
+    const res = await fetch(`http://localhost:3000/files/${currentRepo}/${fileId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = "Document deleted successfully."
+        const btnArr = [
+            {
+                btnId: "dialogOkayBtn",
+                btnText: "Okay"
+            }
+        ]
+        new createDialog(dialogText, btnArr);
+    } else {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = data.error || "Something went wrong";
+        const btnArr = [
+            {
+                btnId: "dialogOkayBtn",
+                btnText: "Okay"
+            }
+        ]
+        new createDialog(dialogText, btnArr);
     }
 }
 

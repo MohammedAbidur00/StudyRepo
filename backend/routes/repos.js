@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder } = require('../controllers/repoController')
+const { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder, deleteRepoFolder, noteRepoFolder } = require('../controllers/repoController')
 const protect = require('../middleware/auth')
 
 router.get('/', protect, getRepos)
@@ -15,5 +15,7 @@ router.post('/notes', protect, createNote)
 router.put('/:id', protect, updateRepo)
 router.put('/:id/notes', protect, updateNote)
 router.delete('/:id', protect, deleteRepo)
+router.delete('/:id/:folderId/folders', protect, deleteRepoFolder)
+router.delete('/:id/:noteId/notes', protect, noteRepoFolder)
 
 module.exports = router

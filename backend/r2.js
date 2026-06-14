@@ -1,5 +1,5 @@
 // backend/r2.js
-const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3')
+const { S3Client, PutObjectCommand, DeleteObjectCommand, DeleteObjectsCommand } = require('@aws-sdk/client-s3')
 const { v4: uuidv4 } = require('uuid')
 const path = require('path')
 
@@ -36,4 +36,14 @@ async function deleteFromR2(filename) {
   }))
 }
 
-module.exports = { uploadToR2, deleteFromR2 }
+async function deleteMultipleFromR2(filenames) {
+  await r2.send(new DeleteObjectsCommand({
+    Bucket: process.env.R2_BUCKET_NAME,
+    Delete: {
+      Objects: filenames.map(filename => ({ Key: filename })),
+      Quiet: true  // don't return info about each deleted file
+    }
+  }))
+}
+
+module.exports = { uploadToR2, deleteFromR2, deleteMultipleFromR2 }

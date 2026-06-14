@@ -637,11 +637,11 @@ body {
     color: black;
 }
 
-#comfirmDeleteBtn, #comfirmFolderNameBtn, #confirmNoteNameBtn, #comfirmFolderOfFolderNameBtn, #confirmNoteOfFolderNameBtn {
+#comfirmDeleteBtn, #comfirmFolderNameBtn, #confirmNoteNameBtn, #comfirmFolderOfFolderNameBtn, #confirmNoteOfFolderNameBtn, #comfirmFolderDeleteBtn, #comfirmNoteDeleteBtn, #comfirmDocumentDeleteBtn {
     border-right: black 0.95px solid;
 }
 
-#confirmCancelBtn, #confirmCancelFolderBtn, #confirmCancelNoteBtn, #confirmCancelFolderOfFolderBtn, #confirmCancelNoteOfFolderBtn {
+#confirmCancelBtn, #confirmCancelFolderBtn, #confirmCancelNoteBtn, #confirmCancelFolderOfFolderBtn, #confirmCancelNoteOfFolderBtn, #confirmFolderCancelBtn, #confirmNoteCancelBtn, #confirmDocumentCancelBtn {
     border-left: black 0.95px solid;
 }
 
@@ -676,7 +676,6 @@ body {
     align-items: center;
     width: 40px;
     height: 40px;
-    margin-left: auto;
 }
 
 .Folder-Card-Info-Con {
@@ -693,6 +692,7 @@ body {
 .Folder-Card-Stats {
     font-size: 13.5px;
     font-weight: bold;
+    white-space: nowrap;
     opacity: 0.7;
     font-family: 'Courier New', Courier, monospace;
 }
@@ -877,6 +877,27 @@ ul[data-type="taskList"] li > div > p {
     overflow: hidden;
 }
 
+.noteRemoveBtnCon {
+    display: flex;
+    margin-left: auto;
+    margin-right: 15px;
+}
+
+.noteRemoveBtnCon button {
+    background-color: white;
+    border: none;
+    font-size: 25px;
+}
+
+.Folder-Card button {
+    pointer-events: auto;
+}
+
+.placeholderMessageElements {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+
 :focus {
     outline: none;
 }
@@ -927,6 +948,10 @@ button {
 }
 
 .editorToolGroup.Hide {
+    display: none;
+}
+
+#studyRepoEditBtns.Hide {
     display: none;
 }
 
