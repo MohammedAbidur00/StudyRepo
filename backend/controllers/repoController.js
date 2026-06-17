@@ -18,9 +18,13 @@ const getRepo = async (req, res) => {
 const getRepos = async (req, res) => {
     try {
         const user_id = req.user.id
+        const user = await pool.query('SELECT id, username, email FROM users WHERE id = $1', [user_id])
+        if (user.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' })
+        }
         const result = await pool.query('SELECT * FROM userrepos WHERE user_id = $1', [user_id])
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Repo not found' })
+            return res.status(200).json(result.rows)
         }
         res.json(result.rows)
     } catch (err) {

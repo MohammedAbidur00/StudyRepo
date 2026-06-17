@@ -1,4 +1,3 @@
-import { locales } from "zod";
 import { getNoteContent, clearhistory } from "./noteEditor";
 
 const headerCurrentUserLabelContainer = document.getElementById("headerCurrentUserLabelContainer");
@@ -12,6 +11,7 @@ const studyRepoPageWrapper = document.getElementById("studyRepoPageWrapper");
 const studyRepoNotePageWrapper = document.getElementById("studyRepoNotePageWrapper");
 const studyRepoFolderPageWrapper = document.getElementById("studyRepoFolderPageWrapper");
 const addDocumentPageWrapper = document.getElementById("addDocumentPageWrapper");
+const studyRepoDocumentsPageWrapper = document.getElementById("studyRepoDocumentsPageWrapper");
 
 const goToRegisterBtn = document.getElementById("goToRegisterBtn");
 const goToLoginBtn = document.getElementById("goToLoginBtn");
@@ -32,6 +32,7 @@ const registerButton = document.getElementById("registerButton");
 const openSettingsBtn = document.getElementById("openSettingsBtn");
 const openStudyReposBtn = document.getElementById("openStudyReposBtn");
 const openCreateStudyRepoBtn = document.getElementById("openCreateStudyRepoBtn");
+const openDocumentsBtn = document.getElementById("openDocumentsBtn");
 
 const settingBackBtn = document.getElementById("settingBackBtn");
 const studyReposBackBtn = document.getElementById("studyReposBackBtn");
@@ -40,6 +41,7 @@ const studyRepoBackBtn = document.getElementById("studyRepoBackBtn");
 const studyRepoNoteBackBtn = document.getElementById("studyRepoNoteBackBtn");
 const studyRepoFolderBackBtn = document.getElementById("studyRepoFolderBackBtn");
 const addDocumentBackBtn = document.getElementById("addDocumentBackBtn");
+const studyRepoDocumentsBackBtn = document.getElementById("studyRepoDocumentsBackBtn");
 
 const loginPageMessageBox = document.getElementById("loginPageMessageBox");
 const registerPageMessageBox = document.getElementById("registerPageMessageBox");
@@ -81,6 +83,10 @@ const saveDocumentBtn = document.getElementById("saveDocumentBtn");
 const cancelDocumentBtn = document.getElementById("cancelDocumentBtn");
 const editStudyRepoCancelBtn = document.getElementById("editStudyRepoCancelBtn");
 const studyRepoEditBtns = document.getElementById("studyRepoEditBtns");
+const placeholderMessageConDocs = document.getElementById("placeholderMessageConDocs");
+const placeholderMessageDocs = document.getElementById("placeholderMessageDocs");
+const documentContentContainer = document.getElementById("documentContentContainer");
+const recentDocumentsSummary = document.getElementById("recentDocumentsSummary");
 
 const addDocumentPageMessageBox = document.getElementById("addDocumentPageMessageBox");
 
@@ -539,18 +545,61 @@ class createNoteCards {
     }
 }
 
-class createDocumentCards {
-    constructor(fileId, fileName, fileUrl, fileType, fileSize) {
+class createRecentDocumentCards {
+    constructor(fileId, fileName, fileUrl, fileType, fileSize, fileCreation) {
         this.fileId = fileId;
         this.fileName = fileName;
         this.fileUrl = fileUrl;
         this.fileType = fileType;
         this.fileSize = fileSize;
+        this.fileCreation = fileCreation;
 
-        const studyRepoDocumentsContainer = document.getElementById("studyRepoDocumentsContainer");
+        const timestamp = this.fileCreation;
+
+        const [date, timePart] = timestamp.split("T");
+        const time = timePart.split(".")[0];
+
+        this.card = document.createElement("div");
+        this.card.classList.add("recentDocumentCard");
+
+        this.cardDesCon = document.createElement("div");
+        this.cardDesConName = document.createElement("div");
+        this.cardDesConCreation = document.createElement("div");
+
+        this.cardDesName = document.createElement("p");
+        this.cardDesName.classList.add("makeBold");
+        this.cardDesCreation = document.createElement("p");
+
+        this.cardDesName.textContent = this.fileName;
+        this.cardDesCreation.textContent = `Date created: ${date} at ${time}`;
+
+        this.cardDesConName.appendChild(this.cardDesName);
+        this.cardDesConCreation.appendChild(this.cardDesCreation);
+
+        this.cardDesCon.appendChild(this.cardDesConName);
+        this.cardDesCon.appendChild(this.cardDesConCreation);
+
+        this.card.appendChild(this.cardDesCon);
+
+        recentDocumentsSummary.appendChild(this.card);
+    }
+}
+
+class createDocumentCards {
+    constructor(fileId, fileName, fileUrl, fileType, fileSize, container) {
+        this.fileId = fileId;
+        this.fileName = fileName;
+        this.fileUrl = fileUrl;
+        this.fileType = fileType;
+        this.fileSize = fileSize;
+        this.container = container;
 
         this.fileContainer = document.createElement("div");
-        studyRepoDocumentsContainer.classList.add("Document-Container");
+        if (this.container == documentContentContainer) {
+            this.container.classList.add("Document-Container-Main");
+        } else {
+            this.container.classList.add("Document-Container");
+        }
         if (this.fileType.startsWith("image/")) {
             this.fileImage = document.createElement("img");
             this.fileImage.src = this.fileUrl;
@@ -563,7 +612,7 @@ class createDocumentCards {
         this.removeBtn.classList.add("Hide");
         this.fileContainer.appendChild(this.removeBtn)
 
-        studyRepoDocumentsContainer.appendChild(this.fileContainer);
+        this.container.appendChild(this.fileContainer);
 
         this.removeBtn.addEventListener("click", (event) => {
             event.stopPropagation();
@@ -692,6 +741,11 @@ openCreateStudyRepoBtn.addEventListener("click", async () => {
     await showCurrentPage();
 })
 
+openDocumentsBtn.addEventListener("click", async () => {
+    setCurrentPage("documentsPage");
+    await showCurrentPage();
+})
+
 studyRepoBackBtn.addEventListener("click", async () => {
     setCurrentPage("studyReposPage");
     await showCurrentPage();
@@ -744,6 +798,11 @@ studyRepoFolderBackBtn.addEventListener("click", async () => {
 addDocumentBackBtn.addEventListener("click", async () => {
     clearPreviews();
     setCurrentPage("studyRepoPage");
+    await showCurrentPage();
+})
+
+studyRepoDocumentsBackBtn.addEventListener("click", async () => {
+    setCurrentPage("homePage");
     await showCurrentPage();
 })
 
@@ -944,9 +1003,11 @@ function clearPreviews() {
 
 async function uploadDocuments() {
     const currentRepo = parseInt(localStorage.getItem("currentRepo"));
+    const userId = await getCurrentUserId();
     const formData = new FormData();
     selectedFiles.forEach(({ file }) => formData.append('files', file))
     formData.append('repoId', currentRepo)
+    formData.append('userId', userId)
 
     const res = await fetch('http://localhost:3000/files/upload', {
         method: 'POST',
@@ -957,7 +1018,10 @@ async function uploadDocuments() {
     const data = await res.json();
 
     if (res.ok) {
+        addDocumentBackBtn.classList.add("Hide");
         showMessageBox(addDocumentPageMessageBox, "add Document successfully, going back to studyrepo...");
+        setCurrentPage("studyRepoPage");
+        setTimeout(async () => await showCurrentPage(), 1000);
     } else {
         showMessageBox(addDocumentPageMessageBox, data.error || "Something went wrong");
     }
@@ -982,7 +1046,7 @@ async function getDocuments() {
             studyRepoDocumentsContainer.appendChild(placeholderMessageCon);
         } else {
             for (const obj of data) {
-                new createDocumentCards(obj.id, obj.filename, obj.url, obj.file_type, obj.file_size)
+                new createDocumentCards(obj.id, obj.filename, obj.url, obj.file_type, obj.file_size, studyRepoDocumentsContainer)
             }
         }
     }
@@ -1314,6 +1378,31 @@ addDocumentBtn.addEventListener("click", async () => {
     await showCurrentPage();
 })
 
+async function getAllUserDocuments() {
+    const userId = await getCurrentUserId();
+    const res = await fetch(`http://localhost:3000/files/${userId}/files`, {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        if (data.length === 0) {
+            placeholderMessageConDocs.classList.remove("Hide");
+            placeholderMessageConDocs.classList.add("placeholderMessageRepoCon");
+            placeholderMessageDocs.textContent = "No documents yet"
+        } else {
+            documentContentContainer.innerHTML = "";
+            for (const obj of data) {
+                new createDocumentCards(obj.id, obj.filename, obj.url, obj.file_type, obj.file_size, documentContentContainer)
+            }
+        }
+    } else {
+        placeholderMessageConDocs.classList.remove("Hide");
+        placeholderMessageDocs.textContent = data.error || "Something went wrong"
+    }
+}
+
 async function createStudyRepo(name, description) {
     const payload = {
         reponame: name.value,
@@ -1347,10 +1436,16 @@ async function getStudyRepos() {
     const data = await res.json();
 
     if (res.ok) {
-        studyRepoCardsContainer.innerHTML = "";
-        data.forEach(repo => {
-            new createStudyRepoCards(repo.id, repo.reponame, repo.repodescription);
-        })
+        if (data.length === 0) {
+            placeholderMessageCon.classList.remove("Hide");
+            placeholderMessageCon.classList.add("placeholderMessageRepoCon");
+            placeholderMessage.textContent = "No repos yet"
+        } else {
+            studyRepoCardsContainer.innerHTML = "";
+            data.forEach(repo => {
+                new createStudyRepoCards(repo.id, repo.reponame, repo.repodescription);
+            })
+        }
     } else {
         placeholderMessageCon.classList.remove("Hide");
         placeholderMessage.textContent = data.error || "Something went wrong"
@@ -1415,14 +1510,42 @@ async function getReposSummary() {
 
     if (res.ok) {
         recentStudyReposSummary.innerHTML = "";
-        data.forEach(repo => {
+        if (data.length === 0) {
             let recentReponame = document.createElement("p");
-            recentReponame.textContent = repo.reponame;
+            recentReponame.textContent = "No recent StudyRepos"
             recentStudyReposSummary.appendChild(recentReponame)
-        })
-    } else {
-        placeholderMessageCon.classList.remove("Hide");
-        placeholderMessage.textContent = data.error || "Something went wrong";
+        } else {
+            data.forEach(repo => {
+                let recentReponame = document.createElement("p");
+                recentReponame.textContent = repo.reponame;
+                recentStudyReposSummary.appendChild(recentReponame)
+            })
+        }
+    }
+}
+
+async function getDocumentsSummary() {
+    const userId = await getCurrentUserId();
+    const res = await fetch(`http://localhost:3000/files/${userId}/files`, {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    data.reverse();
+
+    if (res.ok) {
+        recentDocumentsSummary.innerHTML = "";
+        if (data.length === 0) {
+            let recentDocumentName = document.createElement("p");
+            recentDocumentName.textContent = "No recent documents"
+            recentDocumentsSummary.appendChild(recentDocumentName)
+        } else {
+            recentDocumentsSummary.innerHTML = "";
+            for (const obj of data) {
+                new createRecentDocumentCards(obj.id, obj.filename, obj.url, obj.file_type, obj.file_size, obj.uploaded_at)
+            }
+        }
     }
 }
 
@@ -1730,6 +1853,7 @@ async function logout() {
         method: 'POST',
         credentials: 'include'
     })
+    localStorage.removeItem("dl_option");
     setCurrentPage('loginPage');
 }
 
@@ -1791,7 +1915,7 @@ function showMessageBox(messageBoxEl, message) {
 }
 
 function hideAllPages() {
-    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper, addDocumentPageWrapper];
+    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper, addDocumentPageWrapper, studyRepoDocumentsPageWrapper];
     Pages.forEach(page => {
         page.classList.add("Hide");
     })
@@ -1821,7 +1945,8 @@ async function showCurrentPage() {
         registrationPageWrapper.classList.remove("Hide");
     } else if (currentPage === "homePage") {
         homePageWrapper.classList.remove("Hide");
-        await getReposSummary() 
+        await getReposSummary();
+        await getDocumentsSummary();
     } else if (currentPage === "settingsPage") {
         settingsPageWrapper.classList.remove("Hide");
         await populateSettingsInfo()
@@ -1840,6 +1965,9 @@ async function showCurrentPage() {
         await getRepoFolder();
     } else if (currentPage === "addDocumentPage") {
         addDocumentPageWrapper.classList.remove("Hide");
+    } else if (currentPage === "documentsPage") {
+        studyRepoDocumentsPageWrapper.classList.remove("Hide");
+        await getAllUserDocuments();
     } else {
         loginPageWrapper.classList.remove("Hide");
     }

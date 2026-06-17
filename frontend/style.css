@@ -314,6 +314,24 @@ body {
     padding: 5px;
     margin-left: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#recentDocumentsSummary {
+    overflow-y: scroll;
+    max-height: 280px;
+}
+
+.makeBold {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.makeBold:hover {
+    text-decoration: black 1.5px underline;
+    cursor: pointer;
 }
 
 .Summary-Content p {
@@ -873,6 +891,31 @@ ul[data-type="taskList"] li > div > p {
     box-shadow: 0 2px 5px rgba(0,0,0,0.25);
 }
 
+.Document-Container-Main {
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.Document-Container-Main div {
+    position: relative;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.Document-Container-Main img, .Document-Container-Main iframe {
+    border: black 1.5px solid;
+    border-radius: 8px;
+    max-width: 400px;
+    height: 200px;
+    object-fit: contain;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
 .Stop-Scroll {
     overflow: hidden;
 }
@@ -896,6 +939,25 @@ ul[data-type="taskList"] li > div > p {
 .placeholderMessageElements {
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
+}
+
+.placeholderMessageRepoCon {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+.placeholderMessageRepoCon p {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.recentDocumentCard {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    border: black 1.5px solid;
+    border-radius: 6px;
 }
 
 :focus {

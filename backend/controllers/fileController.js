@@ -1,12 +1,12 @@
 const pool = require('../db')
 const { uploadToR2, deleteFromR2, deleteMultipleFromR2 } = require('../r2')
 
-async function saveDocumentToDB(file, url, repoId) { 
+async function saveDocumentToDB(file, url, repoId, userId) { 
     const result = await pool.query(
-      `INSERT INTO documents (repo_id, filename, url, file_type, file_size)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO documents (repo_id, filename, url, file_type, file_size, user_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [repoId, file.originalname, url, file.mimetype, file.size]
+      [repoId, file.originalname, url, file.mimetype, file.size, userId]
     )
     return result.rows[0]
 }
@@ -39,9 +39,29 @@ const getfiles = async (req, res) => {
     }
 }
 
+const getAllfiles = async (req, res) => {
+    try {
+        const { userId } = req.params
+        const user = await pool.query('SELECT * FROM users WHERE id = $1', [userId])
+        if (user.rows.length === 0) {
+            return res.status(404).json({ error: "User not found" })
+        }
+
+        const result = await pool.query('SELECT * FROM documents WHERE user_id = $1', [userId])
+        if (result.rows.length === 0) {
+            return res.status(200).json(result.rows)
+        }
+
+        res.status(200).json(result.rows)
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Something went wrong" })
+    }
+}
+
 const uploadFiles = async (req, res) => {
     try {
-        const { repoId } = req.body
+        const { repoId, userId } = req.body
         const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [repoId])
         if (repo.rows.length === 0) {
             return res.status(404).json({ error: "Repo not found" })
@@ -50,7 +70,7 @@ const uploadFiles = async (req, res) => {
         const uploaded = await Promise.all(
             req.files.map(async file => {
                 const { url } = await uploadToR2(file)
-                const doc = await saveDocumentToDB(file, url, repoId)
+                const doc = await saveDocumentToDB(file, url, repoId, userId)
                 return doc
             })
         )
@@ -85,4 +105,4 @@ const deleteFile = async (req, res) => {
     }
 }
 
-module.exports = { getfiles, uploadFiles, deleteFile }
+module.exports = { getfiles, uploadFiles, deleteFile, getAllfiles }

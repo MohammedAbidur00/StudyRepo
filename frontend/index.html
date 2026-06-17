@@ -54,8 +54,9 @@
                 <div class="Top-Bar-Btns-Container">
                     <div>
                         <button id="openStudyReposBtn" class="Top-Bar-Btn">STUDY REPOS</button>
+                        <button class="Top-Bar-Btn">STUDY GOALS</button>
                         <button class="Top-Bar-Btn">SCHEDULE</button>
-                        <button class="Top-Bar-Btn">DOCUMENTS</button>
+                        <button id="openDocumentsBtn" class="Top-Bar-Btn">DOCUMENTS</button>
                         <button class="Top-Bar-Btn">ANALYTICS</button>
                         <button id="openSettingsBtn" class="Top-Bar-Btn">SETTINGS</button>
                         <button class="Top-Bar-Btn material-icons">star</button>
@@ -75,9 +76,7 @@
                     <div class="Sumary-Container-Label">
                         <p>RECENT DOCUMENTS</p>
                     </div>
-                    <div class="Summary-Content">
-                        <p>No recent documents</p>
-                    </div>
+                    <div id="recentDocumentsSummary" class="Summary-Content"></div>
                 </div>
                 <div class="Summary-Container">
                     <div class="Sumary-Container-Label">
@@ -92,6 +91,14 @@
                         <p>RECENT STUDY REPOS</p>
                     </div>
                     <div id="recentStudyReposSummary" class="Summary-Content"></div>
+                </div>
+                <div class="Summary-Container">
+                    <div class="Sumary-Container-Label">
+                        <p>GOALS REMINDER</p>
+                    </div>
+                    <div class="Summary-Content">
+                        <p>No goals yet</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -349,6 +356,30 @@
                         <button id="saveDocumentBtn">SAVE</button>
                         <button id="cancelDocumentBtn">CANCEL</button>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div id="studyRepoDocumentsPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="studyRepoDocumentsBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>DOCUMENTS</h1>
+                    </div>
+                </div>
+                <div class="Top-Bar-Btns-Container">
+                    <div>
+                        <button class="Top-Bar-Btn">+ ADD DOCUMENT</button>
+                        <button class="Top-Bar-Btn">EDIT DOCUMENTS</button>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
+                </div>
+            </div>
+            <div id="documentContentContainer" class="Page-Content">
+                <div id="placeholderMessageConDocs" class="Hide">
+                    <p id="placeholderMessageDocs" class="Placeholder-Message"></p>
                 </div>
             </div>
         </div>
