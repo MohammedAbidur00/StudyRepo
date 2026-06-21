@@ -1154,6 +1154,54 @@ ul[data-type="taskList"] li > div > p {
     font-size: 30px;
 }
 
+.flashcardCard, .flashcardCardFull {
+    border: black 1.5px solid;
+    display: flex;
+    min-width: 220px;
+    min-height: 140px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+.flashcardsCon {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+}
+
+.flashcardCard p {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.flashcardCardFull p {
+    font-size: 25px;
+}
+
+.flashcardCardFull {
+    background-color: white;
+    min-width: 70%;
+    min-height: 80%;
+    overflow-y: scroll;
+    cursor: pointer;
+    position: relative;
+}
+
+.closeFullViewBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    border: black 1.5px solid;
+    border-radius: 4px;
+    background-color: white;
+    padding: 4px 6px;
+    font-weight: bold;
+}
+
 :focus {
     outline: none;
 }

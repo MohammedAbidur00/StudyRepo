@@ -43,6 +43,7 @@ const studyRepoNoteBackBtn = document.getElementById("studyRepoNoteBackBtn");
 const studyRepoFolderBackBtn = document.getElementById("studyRepoFolderBackBtn");
 const addDocumentBackBtn = document.getElementById("addDocumentBackBtn");
 const studyRepoDocumentsBackBtn = document.getElementById("studyRepoDocumentsBackBtn");
+const createFlashcardBackBtn = document.getElementById("createFlashcardBackBtn");
 
 const loginPageMessageBox = document.getElementById("loginPageMessageBox");
 const registerPageMessageBox = document.getElementById("registerPageMessageBox");
@@ -95,6 +96,15 @@ const documentName = document.getElementById("documentName");
 const viewerDocumentContentContainer = document.getElementById("viewerDocumentContentContainer");
 const recentAnalyticsSummary = document.getElementById("recentAnalyticsSummary");
 const addDocumentPageMessageBox = document.getElementById("addDocumentPageMessageBox");
+const createFlashcardPageWrapper = document.getElementById("createFlashcardPageWrapper");
+const addFlashcardBtn = document.getElementById("addFlashcardBtn");
+
+const createFlashcardTitleInput = document.getElementById("createFlashcardTitleInput");
+const createFlashcardAnswerInput = document.getElementById("createFlashcardAnswerInput");
+const saveFlashcardBtn = document.getElementById("saveFlashcardBtn");
+const cancelFlashcardBtn = document.getElementById("cancelFlashcardBtn");
+const createFlashcardPageMessageBox = document.getElementById("createFlashcardPageMessageBox");
+const flashcardViewerWrapper = document.getElementById("flashcardViewerWrapper");
 
 let repoToDelete = "";
 let isMultiSelect = false;
@@ -106,6 +116,9 @@ let studyRepoEditMode = false;
 let folderToDelete = "";
 let noteToDelete = "";
 let documentToDelete = "";
+
+const notesViewed = [];
+const flashcardsViewed = [];
 
 class createStudyRepoCards {
     constructor(repoId, repoName, repoDescription) {
@@ -358,6 +371,7 @@ class buildStudyRepoContent {
         this.studyRepoFoldersElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
         this.studyRepoNotesElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
         this.studyRepoFlashcardsElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyRepoFlashcardsElementsContainer.classList.add("flashcardsCon");
 
         this.studyRepoDocumentsElementsContainer.id = "studyRepoDocumentsContainer"
         this.studyRepoFoldersElementsContainer.id = "studyRepoFoldersContainer";
@@ -558,6 +572,9 @@ class createNoteCards {
         noteCon.appendChild(this.noteCard);
 
         this.noteCard.addEventListener("click", async () => {
+            if (!notesViewed.includes(this.noteId)) {
+                notesViewed.push(this.noteId)
+            }
             setCurrentPage("noteEditorPage");
             await showCurrentPage();
             if (this.noteContent === null) {
@@ -765,6 +782,66 @@ class createDocumentCards {
     }
 }
 
+class createFlashcardCards {
+    constructor(flashcardId, front, back, flashcardCon) {
+        this.flashcardId = flashcardId;
+        this.front = front;
+        this.back = back;
+        this.flashcardCon = flashcardCon;
+        
+        let switchSide = false;
+
+        this.flashcardCard = document.createElement("div");
+        this.flashcardCard.classList.add("flashcardCard")
+        this.flashcardText = document.createElement("p");
+
+        this.flashcardCard.appendChild(this.flashcardText);
+
+        this.flashcardText.textContent = this.front;
+
+        this.flashcardCon.appendChild(this.flashcardCard)
+
+        this.flashcardCardFull = document.createElement("div");
+
+        this.closeFullViewBtn = document.createElement("button")
+        this.closeFullViewBtn.textContent = "Close";
+        this.closeFullViewBtn.classList.add("closeFullViewBtn");
+
+        this.flashcardCardFull.appendChild(this.closeFullViewBtn)
+
+        this.flashcardCard.addEventListener("click", () => {
+            if (!flashcardsViewed.includes(this.flashcardId)) {
+                flashcardsViewed.push(this.flashcardId)
+            }
+            flashcardViewerWrapper.classList.remove("Hide")
+            document.body.style.overflow = "hidden";
+            this.flashcardCardFull.classList.add("flashcardCardFull");
+            this.flashcardTextFull = document.createElement("p");
+            this.flashcardTextFull.textContent = this.front;
+            this.flashcardCardFull.appendChild(this.flashcardTextFull);
+            flashcardViewerWrapper.appendChild(this.flashcardCardFull);
+        })
+
+        this.flashcardCardFull.addEventListener("click", () => {
+            switchSide = !switchSide;
+            if (switchSide) {
+                this.flashcardTextFull.textContent = this.back;
+            } else {
+                this.flashcardTextFull.textContent = this.front;
+            }
+        })
+
+        this.closeFullViewBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            this.flashcardCardFull.removeChild(this.flashcardTextFull);
+            flashcardViewerWrapper.classList.add("Hide")
+            document.body.style.overflow = "scroll";
+            flashcardViewerWrapper.innerHTML = "";
+            switchSide = false;
+        })
+    }
+}
+
 class createRecentReposCards {
     constructor(repoId, repoName, lastAccessed) {
         this.repoId = repoId;
@@ -915,7 +992,7 @@ openDocumentsBtn.addEventListener("click", async () => {
 })
 
 studyRepoBackBtn.addEventListener("click", async () => {
-    await endRepoSession();
+    await endRepoSession(notesViewed.length, flashcardsViewed.length);
     setCurrentPage("studyReposPage");
     await showCurrentPage();
 })
@@ -977,6 +1054,16 @@ addDocumentBackBtn.addEventListener("click", async () => {
 
 studyRepoDocumentsBackBtn.addEventListener("click", async () => {
     setCurrentPage("homePage");
+    await showCurrentPage();
+})
+
+createFlashcardBackBtn.addEventListener("click", async () => {
+    setCurrentPage("studyRepoPage");
+    await showCurrentPage();
+})
+
+addFlashcardBtn.addEventListener("click", async () => {
+    setCurrentPage("addFlashcardPage");
     await showCurrentPage();
 })
 
@@ -1289,6 +1376,24 @@ saveRepoBtn.addEventListener("click", async () => {
     } else {
         await createStudyRepo(createRepoNameInput, createRepoDescriptionInput);
     }
+})
+
+cancelRepoBtn.addEventListener("click", () => {
+    createRepoNameInput.value = "";
+    createRepoDescriptionInput.value = "";
+})
+
+saveFlashcardBtn.addEventListener("click", async () => {
+    if (createFlashcardTitleInput.value === "" || createFlashcardAnswerInput.value === "") {
+        showMessageBox(createFlashcardPageMessageBox, "Make sure both fields are completed");
+    } else {
+        await createRepoFlashcard(createFlashcardTitleInput.value, createFlashcardAnswerInput.value)
+    }
+})
+
+cancelFlashcardBtn.addEventListener("click", () => {
+    createFlashcardTitleInput.value = "";
+    createFlashcardAnswerInput.value = "";
 })
 
 showChangeUsernameInput.addEventListener("input", async () => {
@@ -1742,6 +1847,8 @@ async function getUserStats() {
     const currentStreak = document.getElementById("currentStreak");
     const totalHours = document.getElementById("totalHours");
     const totalToday = document.getElementById("totalToday");
+    const notesViewedToday = document.getElementById("notesViewedToday");
+    const flashcardsViewedToday = document.getElementById("flashcardsViewedToday");
 
     const currentStreakLabel = document.createElement("span");
     const totalHoursLabel = document.createElement("span");
@@ -1757,12 +1864,15 @@ async function getUserStats() {
     const data = await res.json();
 
     if (res.ok) {
+        notesViewedToday.textContent = data.notes_today;
+        flashcardsViewedToday.textContent = data.flashcards_today;
         currentStreak.innerHTML = "";
         totalHours.innerHTML = "";
         totalToday.innerHTML = "";
         currentStreakValue.textContent = `${data.current_streak} days`;
         const hours = data.total_seconds / 3600;
         const todayHours = data.seconds_today / 3600
+        console.log(hours, todayHours)
         totalHoursValue.textContent = hours < 0.1 ? `${Math.round(data.total_seconds)}s` : hours.toFixed(1) + 'h';
         totalTodayValue.textContent = todayHours < 0.1 ? `${Math.round(data.seconds_today)}s` : hours.toFixed(1) + 'h';
         currentStreak.appendChild(currentStreakLabel)
@@ -2247,10 +2357,41 @@ async function getRepoFlashcards(repoId, parentFolder = 0) {
             }
             for (const flashcard of flashcards) {
                 if (flashcard.folder_id === parentFolder) {
-                    new createNoteCards(flashcard.id, flashcard.title, flashcard.content, flashcardsCon);
+                    //new createNoteCards(flashcard.id, flashcard.title, flashcard.content, flashcardsCon);
+                    new createFlashcardCards(flashcard.id, flashcard.front, flashcard.back, flashcardsCon);
                 }
             }
         }
+    }
+}
+
+async function createRepoFlashcard(title, answer) {
+    const repoId = parseInt(localStorage.getItem("currentRepo"))
+    const folderId = parseInt(localStorage.getItem("currentFolder"))
+    const payload = {
+        repoId: repoId,
+        folderId: folderId,
+        front: title,
+        back: answer
+    }
+
+    const res = await fetch('http://localhost:3000/repos/flashcards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+    })
+
+    if (res.ok) {
+        showMessageBox(createFlashcardPageMessageBox, "Flashcard created successfully")
+        /*createStudyRepoBackBtn.classList.add("Hide");
+        showMessageBox(createRepoPageMessageBox, "Flashcard created successfully, going back to studyrepos...");
+        name.value = "";
+        description.value = "";
+        setCurrentPage('studyReposPage')
+        setTimeout(async () => await showCurrentPage(), 1000);*/
+    } else {
+        showMessageBox(createFlashcardPageMessageBox, data.error || "Something went wrong")
     }
 }
 
@@ -2321,7 +2462,7 @@ function showMessageBox(messageBoxEl, message) {
 }
 
 function hideAllPages() {
-    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper, addDocumentPageWrapper, studyRepoDocumentsPageWrapper];
+    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper, addDocumentPageWrapper, studyRepoDocumentsPageWrapper, createFlashcardPageWrapper];
     Pages.forEach(page => {
         page.classList.add("Hide");
     })
@@ -2376,6 +2517,8 @@ async function showCurrentPage() {
     } else if (currentPage === "documentsPage") {
         studyRepoDocumentsPageWrapper.classList.remove("Hide");
         await getAllUserDocuments();
+    } else if (currentPage === "addFlashcardPage") {
+        createFlashcardPageWrapper.classList.remove("Hide");
     } else {
         loginPageWrapper.classList.remove("Hide");
     }

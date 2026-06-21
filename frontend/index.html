@@ -86,12 +86,12 @@
                             </div>
                             <div class="notesAndFlashcardBasicInfo">
                                 <div>
-                                    <p>Notes Reviewed</p>
-                                    <h2>12</h2>
+                                    <p>Notes Reviewed Today</p>
+                                    <h2 id="notesViewedToday"></h2>
                                 </div>
                                 <div>
-                                    <p>Flashcards Reviewed</p>
-                                    <h2>122</h2>
+                                    <p>Flashcards Reviewed Today</p>
+                                    <h2 id="flashcardsViewedToday"></h2>
                                 </div>
                             </div>
                         </div>
@@ -410,6 +410,35 @@
                 </div>
             </div>
         </div>
+        <div id="createFlashcardPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="createFlashcardBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>CREATE FLASHCARD</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="Create-Study-Repo-Content">
+                <div class="Create-Repo-Inputs-Containers">
+                    <div class="Create-Repo-Inputs-Container">
+                        <p class="createRepoLabel">FLASH CARD FRONT</p>
+                        <input id="createFlashcardTitleInput" class="createRepoNameInput" type="text" placeholder="Enter flashcard front information.....">
+                    </div>
+                    <div class="Create-Repo-Inputs-Container">
+                        <p class="createRepoLabel">FLASH CARD BACK</p>
+                        <textarea id="createFlashcardAnswerInput" class="createRepoDescriptionInput" placeholder="Enter flashcard back information....."></textarea>
+                    </div>
+                    <div id="createFlashcardPageMessageBox" class="Message-Box Hide"></div>
+                    <div class="Create-Repo-Btns-Container">
+                        <button id="saveFlashcardBtn">SAVE</button>
+                        <button id="cancelFlashcardBtn">CANCEL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="dialogWrapper" class="Dialog-Wrapper Hide"></div>
@@ -434,6 +463,8 @@
         </div>
         <div id="viewerDocumentContentContainer" class="Page-Content"></div>
     </div>
+
+    <div id="flashcardViewerWrapper" class="Dialog-Wrapper Hide"></div>
     
     <script type="module" src="index.js"></script>
     <script type="module" src="./noteEditor.js"></script>

@@ -81,7 +81,11 @@ const getUserStats = async (req, res) => {
     const result = await pool.query(
       `SELECT
         COALESCE(SUM(EXTRACT(EPOCH FROM (ended_at - started_at))), 0) AS total_seconds,
-        COALESCE(SUM(EXTRACT(EPOCH FROM (ended_at - started_at))) FILTER (WHERE DATE(started_at) = CURRENT_DATE), 0) AS seconds_today
+        COALESCE(SUM(EXTRACT(EPOCH FROM (ended_at - started_at))) FILTER (WHERE DATE(started_at) = CURRENT_DATE), 0) AS seconds_today,
+        COALESCE(SUM(notes_reviewed), 0) AS total_notes,
+        COALESCE(SUM(notes_reviewed) FILTER (WHERE DATE(started_at) = CURRENT_DATE), 0) AS notes_today,
+        COALESCE(SUM(flashcards_reviewed), 0) AS total_flashcards,
+        COALESCE(SUM(flashcards_reviewed) FILTER (WHERE DATE(started_at) = CURRENT_DATE), 0) AS flashcards_today
       FROM useranalytics
       WHERE user_id = $1 AND ended_at IS NOT NULL`,
       [id]

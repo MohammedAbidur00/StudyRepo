@@ -199,7 +199,6 @@ const getNote = async (req, res) => {
 const createNote = async (req, res) => {
     try {
         const { id, title, folderId, content } = req.body
-        console.log(folderId)
         const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id]);
         if (repo.rows.length === 0) {
             return res.status(404).json({ error: "Repo not found" })
@@ -275,6 +274,21 @@ const getFlashcards = async (req, res) => {
     }
 }
 
+const createFlashcard = async (req, res) => {
+    try {
+        const { repoId, folderId, front, back } = req.body
+        const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [repoId]);
+        if (repo.rows.length === 0) {
+            return res.status(404).json({ error: "Repo not found" })
+        } 
+        const result = await pool.query('INSERT INTO repoflashcards (repo_id, folder_id, front, back) VALUES ($1, $2, $3, $4) RETURNING *', [repoId, folderId, front, back])
+        res.status(201).json(result.rows[0])
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+}
+
 const startRepoSession = async (req, res) => {
     try {
         const { userId } = req.params
@@ -295,12 +309,12 @@ const endRepoSession = async (req, res) => {
 
         const session = result.rows[0]
 
-        const seconds = Math.round((new Date(session.ended_at) - new Date(session.started_at)) / 1000)
+        /*const seconds = Math.round((new Date(session.ended_at) - new Date(session.started_at)) / 1000)
 
         await pool.query(
             'UPDATE userstats SET total_seconds = total_seconds + $1 WHERE user_id = $2',
             [seconds, session.user_id]
-        )
+        )*/
         res.status(200).json(result.rows[0])
     } catch (err) {
         console.error(err)
@@ -308,4 +322,4 @@ const endRepoSession = async (req, res) => {
     }
 }
 
-module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder, deleteRepoFolder, noteRepoFolder, startRepoSession, endRepoSession, getFlashcards }
+module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder, deleteRepoFolder, noteRepoFolder, startRepoSession, endRepoSession, getFlashcards, createFlashcard }
