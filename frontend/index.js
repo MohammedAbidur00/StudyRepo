@@ -1,4 +1,5 @@
 import { getNoteContent, clearhistory } from "./noteEditor";
+import Chart from 'chart.js/auto';
 
 const headerCurrentUserLabelContainer = document.getElementById("headerCurrentUserLabelContainer");
 const loginPageWrapper = document.getElementById("loginPageWrapper");
@@ -87,7 +88,12 @@ const placeholderMessageConDocs = document.getElementById("placeholderMessageCon
 const placeholderMessageDocs = document.getElementById("placeholderMessageDocs");
 const documentContentContainer = document.getElementById("documentContentContainer");
 const recentDocumentsSummary = document.getElementById("recentDocumentsSummary");
-
+const recentStudyReposSummary = document.getElementById("recentStudyReposSummary");
+const fileFullViewerWrapper = document.getElementById("fileFullViewerWrapper");
+const fileFullViewerBackBtn = document.getElementById("fileFullViewerBackBtn");
+const documentName = document.getElementById("documentName");
+const viewerDocumentContentContainer = document.getElementById("viewerDocumentContentContainer");
+const recentAnalyticsSummary = document.getElementById("recentAnalyticsSummary");
 const addDocumentPageMessageBox = document.getElementById("addDocumentPageMessageBox");
 
 let repoToDelete = "";
@@ -171,6 +177,7 @@ class createStudyRepoCards {
             setCurrentPage("studyRepoPage");
             localStorage.setItem("currentRepo", this.repoId);
             await showCurrentPage();
+            await startRepoSession();
         });
 
         this.repoRemoveButton.addEventListener("click", () => {
@@ -229,45 +236,59 @@ class buildFolderContent {
 
         this.studyRepoFoldersContainer = document.createElement("div");
         this.studyRepoNotesContainer = document.createElement("div");
+        this.studyRepoFlashcardsContainer = document.createElement("div");
 
         this.studyRepoFoldersTitleContainer = document.createElement("div");
         this.studyRepoNotesTitleContainer = document.createElement("div");
+        this.studyRepoFlashcardsTitleContainer = document.createElement("div");
 
         this.studyRepoFoldersElementsContainer = document.createElement("div");
         this.studyRepoNotesElementsContainer = document.createElement("div");
+        this.studyRepoFlashcardsElementsContainer = document.createElement("div");
 
         this.studyRepoFoldersTitle = document.createElement("h2");
         this.studyRepoNotesTitle = document.createElement("h2");
+        this.studyRepoFlashcardsTitle = document.createElement("h2");
 
         this.studyRepoFoldersContainer.classList.add("Study-Repo-Content-Container");
         this.studyRepoNotesContainer.classList.add("Study-Repo-Content-Container");
+        this.studyRepoFlashcardsContainer.classList.add("Study-Repo-Content-Container");
 
         this.studyRepoFoldersTitleContainer.classList.add("Study-Repo-Content-Container-Title");
         this.studyRepoNotesTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+        this.studyRepoFlashcardsTitleContainer.classList.add("Study-Repo-Content-Container-Title");
 
         this.studyRepoFoldersElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
         this.studyRepoNotesElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyRepoFlashcardsElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
 
         this.studyRepoFoldersElementsContainer.id = "folderOfFoldersContainer";
         this.studyRepoNotesElementsContainer.id = "notesOfFolderContainer";
+        this.studyRepoFlashcardsElementsContainer.id = "flashcardsOfFolderContainer";
 
         this.studyRepoFoldersTitle.textContent = "FOLDERS";
         this.studyRepoNotesTitle.textContent = "NOTES";
+        this.studyRepoFlashcardsTitle.textContent = "FLASHCARDS";
 
         this.studyRepoFoldersTitleContainer.appendChild(this.studyRepoFoldersTitle);
         this.studyRepoNotesTitleContainer.appendChild(this.studyRepoNotesTitle);
+        this.studyRepoFlashcardsTitleContainer.appendChild(this.studyRepoFlashcardsTitle);
 
         this.studyRepoFoldersContainer.appendChild(this.studyRepoFoldersTitleContainer);
         this.studyRepoNotesContainer.appendChild(this.studyRepoNotesTitleContainer)
+        this.studyRepoFlashcardsContainer.appendChild(this.studyRepoFlashcardsTitleContainer)
 
         this.studyRepoFoldersContainer.appendChild(this.studyRepoFoldersElementsContainer);
         this.studyRepoNotesContainer.appendChild(this.studyRepoNotesElementsContainer);
+        this.studyRepoFlashcardsContainer.appendChild(this.studyRepoFlashcardsElementsContainer);
 
+        folderContentContainer.appendChild(this.studyRepoFlashcardsContainer);
         folderContentContainer.appendChild(this.studyRepoFoldersContainer);
         folderContentContainer.appendChild(this.studyRepoNotesContainer);
 
         this.getFolders(this.folderId);
         this.getNotes(this.folderId);
+        this.getFlashcards(this.folderId);
         this.checkDepth();
     }
 
@@ -280,6 +301,11 @@ class buildFolderContent {
     async getNotes(folderId) {
         const currentRepo = localStorage.getItem("currentRepo")
         await getRepoNotes(currentRepo, folderId);
+    }
+
+    async getFlashcards(folderId) {
+        const currentRepo = localStorage.getItem("currentRepo")
+        await getRepoFlashcards(currentRepo, folderId);
     }
 
     checkDepth() {
@@ -301,58 +327,72 @@ class buildStudyRepoContent {
         this.studyRepoDocumentsContainer = document.createElement("div");
         this.studyRepoFoldersContainer = document.createElement("div");
         this.studyRepoNotesContainer = document.createElement("div");
+        this.studyRepoFlashcardsContainer = document.createElement("div");
 
         this.studyRepoDocumentsTitleContainer = document.createElement("div");
         this.studyRepoFoldersTitleContainer = document.createElement("div");
         this.studyRepoNotesTitleContainer = document.createElement("div");
+        this.studyRepoFlashcardsTitleContainer = document.createElement("div");
 
         this.studyRepoDocumentsElementsContainer = document.createElement("div");
         this.studyRepoFoldersElementsContainer = document.createElement("div");
         this.studyRepoNotesElementsContainer = document.createElement("div");
+        this.studyRepoFlashcardsElementsContainer = document.createElement("div");
 
         this.studyRepoDocumentsTitle = document.createElement("h2");
         this.studyRepoFoldersTitle = document.createElement("h2");
         this.studyRepoNotesTitle = document.createElement("h2");
+        this.studyRepoFlashcardsTitle = document.createElement("h2");
 
         this.studyRepoDocumentsContainer.classList.add("Study-Repo-Content-Container");
         this.studyRepoFoldersContainer.classList.add("Study-Repo-Content-Container");
         this.studyRepoNotesContainer.classList.add("Study-Repo-Content-Container");
+        this.studyRepoFlashcardsContainer.classList.add("Study-Repo-Content-Container");
 
         this.studyRepoDocumentsTitleContainer.classList.add("Study-Repo-Content-Container-Title");
         this.studyRepoFoldersTitleContainer.classList.add("Study-Repo-Content-Container-Title");
         this.studyRepoNotesTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+        this.studyRepoFlashcardsTitleContainer.classList.add("Study-Repo-Content-Container-Title");
 
         this.studyRepoDocumentsElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
         this.studyRepoFoldersElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
         this.studyRepoNotesElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyRepoFlashcardsElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
 
         this.studyRepoDocumentsElementsContainer.id = "studyRepoDocumentsContainer"
         this.studyRepoFoldersElementsContainer.id = "studyRepoFoldersContainer";
         this.studyRepoNotesElementsContainer.id = "studyRepoNotesContainer";
+        this.studyRepoFlashcardsElementsContainer.id = "studyRepoFlashcardsContainer";
 
         this.studyRepoDocumentsTitle.textContent = "DOCUMENTS";
         this.studyRepoFoldersTitle.textContent = "FOLDERS";
         this.studyRepoNotesTitle.textContent = "NOTES";
+        this.studyRepoFlashcardsTitle.textContent = "FLASHCARDS";
 
         this.studyRepoDocumentsTitleContainer.appendChild(this.studyRepoDocumentsTitle);
         this.studyRepoFoldersTitleContainer.appendChild(this.studyRepoFoldersTitle);
         this.studyRepoNotesTitleContainer.appendChild(this.studyRepoNotesTitle);
+        this.studyRepoFlashcardsTitleContainer.appendChild(this.studyRepoFlashcardsTitle);
 
         this.studyRepoDocumentsContainer.appendChild(this.studyRepoDocumentsTitleContainer);
         this.studyRepoFoldersContainer.appendChild(this.studyRepoFoldersTitleContainer);
         this.studyRepoNotesContainer.appendChild(this.studyRepoNotesTitleContainer)
+        this.studyRepoFlashcardsContainer.appendChild(this.studyRepoFlashcardsTitleContainer)
 
         this.studyRepoDocumentsContainer.appendChild(this.studyRepoDocumentsElementsContainer);
         this.studyRepoFoldersContainer.appendChild(this.studyRepoFoldersElementsContainer);
         this.studyRepoNotesContainer.appendChild(this.studyRepoNotesElementsContainer);
+        this.studyRepoFlashcardsContainer.appendChild(this.studyRepoFlashcardsElementsContainer);
 
         studyRepoContentContainer.appendChild(this.studyRepoDocumentsContainer);
+        studyRepoContentContainer.appendChild(this.studyRepoFlashcardsContainer);
         studyRepoContentContainer.appendChild(this.studyRepoFoldersContainer);
         studyRepoContentContainer.appendChild(this.studyRepoNotesContainer);
 
         this.getFolders(this.repoId);
         this.getNotes(this.repoId);
         this.getDocuments();
+        this.getFlashcards(this.repoId);
     }
 
     async getFolders(repoId) {
@@ -365,6 +405,10 @@ class buildStudyRepoContent {
 
     async getDocuments() {
         await getDocuments();
+    }
+
+    async getFlashcards(repo_id) {
+        await getRepoFlashcards(repo_id)
     }
 }
 
@@ -566,6 +610,37 @@ class createRecentDocumentCards {
         this.cardDesConName = document.createElement("div");
         this.cardDesConCreation = document.createElement("div");
 
+        this.cardFileCon = document.createElement("div");
+        this.cardFile = document.createElement("img");
+        this.cardFile.classList.add("overlayFile")
+        this.cardFile.src = this.fileUrl
+
+        this.cardFileCon.appendChild(this.cardFile);
+
+        this.fileSizeCon = document.createElement("div");
+        this.fileSizeInfo = document.createElement("p");
+        this.fileSizeInfo.textContent = this.formatBytes(this.fileSize);
+
+        this.viewBtnCon = document.createElement("div");
+        this.viewBtnCon.classList.add("overlayViewBtnCon")
+        this.viewBtn = document.createElement("button");
+        this.viewBtn.textContent = "View File"
+        this.viewBtnCon.appendChild(this.viewBtn)
+
+        this.fileSizeCon.appendChild(this.fileSizeInfo);
+
+        this.topContainer = document.createElement("div");
+        this.topContainer.classList.add("overlayTopCon")
+        this.topContainer.appendChild(this.cardFileCon);
+        this.topContainer.appendChild(this.fileSizeCon);
+
+        this.overlayCon = document.createElement("div");
+        this.overlayCon.classList.add("moreInfoOverlay");
+        this.overlayCon.classList.add("Hide");
+
+        this.overlayCon.appendChild(this.topContainer);
+        this.overlayCon.appendChild(this.viewBtnCon);
+
         this.cardDesName = document.createElement("p");
         this.cardDesName.classList.add("makeBold");
         this.cardDesCreation = document.createElement("p");
@@ -581,7 +656,47 @@ class createRecentDocumentCards {
 
         this.card.appendChild(this.cardDesCon);
 
+        this.card.appendChild(this.overlayCon)
+
         recentDocumentsSummary.appendChild(this.card);
+
+        this.card.addEventListener("mouseenter", () => {
+            this.overlayCon.classList.remove("Hide");
+        })
+
+        this.card.addEventListener("mouseleave", () => {
+            this.overlayCon.classList.add("Hide");
+        })
+
+        this.viewBtn.addEventListener("click", () => {
+            fileFullViewerWrapper.classList.remove("Hide");
+            viewerDocumentContentContainer.innerHTML = "";
+            documentName.textContent = this.fileName;
+            if (this.fileType.startsWith("image/")) {
+                const fullImgCon = document.createElement("div");
+                const fullImg = document.createElement("img");
+                fullImg.classList.add("fullImgStyle")
+                fullImg.src = this.fileUrl;
+                fullImgCon.appendChild(fullImg)
+                viewerDocumentContentContainer.appendChild(fullImgCon)
+            }
+        })
+    }
+
+    formatBytes(bytes) {
+        if (bytes < 1024) {
+            return `${bytes} B`;
+        }
+    
+        if (bytes < 1024 * 1024) {
+            return `${(bytes / 1024).toFixed(1)} KB`;
+        }
+    
+        if (bytes < 1024 * 1024 * 1024) {
+            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        }
+    
+        return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
     }
 }
 
@@ -633,6 +748,59 @@ class createDocumentCards {
             ]
             new createDialog(dialogText, btnsArr)
         })
+
+        this.fileContainer.addEventListener("click", () => {
+            fileFullViewerWrapper.classList.remove("Hide");
+            viewerDocumentContentContainer.innerHTML = "";
+            documentName.textContent = this.fileName;
+            if (this.fileType.startsWith("image/")) {
+                const fullImgCon = document.createElement("div");
+                const fullImg = document.createElement("img");
+                fullImg.classList.add("fullImgStyle")
+                fullImg.src = this.fileUrl;
+                fullImgCon.appendChild(fullImg)
+                viewerDocumentContentContainer.appendChild(fullImgCon)
+            }
+        })
+    }
+}
+
+class createRecentReposCards {
+    constructor(repoId, repoName, lastAccessed) {
+        this.repoId = repoId;
+        this.repoName = repoName;
+        this.lastAccessed = lastAccessed;
+
+        const dateObj = new Date(this.lastAccessed);
+
+        const date = dateObj.toLocaleDateString("en-GB");
+        const time = dateObj.toLocaleTimeString("en-GB", {
+            hour12: false
+        });
+
+        this.card = document.createElement("div");
+        this.card.classList.add("recentDocumentCard");
+
+        this.cardDesCon = document.createElement("div");
+        this.cardDesConName = document.createElement("div");
+        this.cardDesConCreation = document.createElement("div");
+
+        this.cardDesName = document.createElement("p");
+        this.cardDesName.classList.add("makeBold");
+        this.cardDesCreation = document.createElement("p");
+
+        this.cardDesName.textContent = this.repoName;
+        this.cardDesCreation.textContent = `last accessed at: ${date} at ${time}`;
+
+        this.cardDesConName.appendChild(this.cardDesName);
+        this.cardDesConCreation.appendChild(this.cardDesCreation);
+
+        this.cardDesCon.appendChild(this.cardDesConName);
+        this.cardDesCon.appendChild(this.cardDesConCreation);
+
+        this.card.appendChild(this.cardDesCon);
+
+        recentStudyReposSummary.appendChild(this.card);
     }
 }
 
@@ -747,6 +915,7 @@ openDocumentsBtn.addEventListener("click", async () => {
 })
 
 studyRepoBackBtn.addEventListener("click", async () => {
+    await endRepoSession();
     setCurrentPage("studyReposPage");
     await showCurrentPage();
 })
@@ -761,6 +930,7 @@ settingBackBtn.addEventListener("click", async () => {
 studyReposBackBtn.addEventListener("click", async () => {
     setCurrentPage("homePage");
     await showCurrentPage();
+    location.reload();
 })
 
 createStudyRepoBackBtn.addEventListener("click", async () => {
@@ -775,6 +945,10 @@ studyRepoNoteBackBtn.addEventListener("click", async () => {
     localStorage.removeItem("noteContent");
     setCurrentPage("studyRepoPage");
     await showCurrentPage();
+})
+
+fileFullViewerBackBtn.addEventListener("click", () => {
+    fileFullViewerWrapper.classList.add("Hide");
 })
 
 studyRepoFolderBackBtn.addEventListener("click", async () => {
@@ -1100,6 +1274,7 @@ registerButton.addEventListener("click", async () => {
         if (res.ok) {
             showMessageBox(registerPageMessageBox, "Account created! Going Home.")
             setCurrentPage("homePage");
+            await addStats(await getCurrentUserId());
             await showCurrentPage();
             await showCurrentUser();
         } else {
@@ -1452,6 +1627,20 @@ async function getStudyRepos() {
     }
 }
 
+async function addStats(id) {
+    const res = await fetch(`http://localhost:3000/users/${id}/stats`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(data.error)
+    }
+}
+
 async function populateSettingsInfo() {
     const currentUser = await getCurrentuser();
 
@@ -1506,7 +1695,6 @@ async function getReposSummary() {
     })
 
     const data = await res.json();
-    const recentStudyReposSummary = document.getElementById("recentStudyReposSummary");
 
     if (res.ok) {
         recentStudyReposSummary.innerHTML = "";
@@ -1516,9 +1704,7 @@ async function getReposSummary() {
             recentStudyReposSummary.appendChild(recentReponame)
         } else {
             data.forEach(repo => {
-                let recentReponame = document.createElement("p");
-                recentReponame.textContent = repo.reponame;
-                recentStudyReposSummary.appendChild(recentReponame)
+                new createRecentReposCards(repo.id, repo.reponame, repo.last_accessed_at)
             })
         }
     }
@@ -1531,8 +1717,6 @@ async function getDocumentsSummary() {
     })
 
     const data = await res.json();
-
-    data.reverse();
 
     if (res.ok) {
         recentDocumentsSummary.innerHTML = "";
@@ -1547,6 +1731,144 @@ async function getDocumentsSummary() {
             }
         }
     }
+}
+
+async function getUserStats() {
+    const id = await getCurrentUserId();
+    const res = await fetch(`http://localhost:3000/users/${id}/stats`, {
+        credentials: 'include'
+    })
+
+    const currentStreak = document.getElementById("currentStreak");
+    const totalHours = document.getElementById("totalHours");
+    const totalToday = document.getElementById("totalToday");
+
+    const currentStreakLabel = document.createElement("span");
+    const totalHoursLabel = document.createElement("span");
+    const totalTodayLabel = document.createElement("span");
+    currentStreakLabel.textContent = "Current Streak"
+    totalHoursLabel.textContent = "Total Studied"
+    totalTodayLabel.textContent = "Total Today"
+
+    const currentStreakValue = document.createElement("p");
+    const totalHoursValue = document.createElement("p");
+    const totalTodayValue = document.createElement("p");
+
+    const data = await res.json();
+
+    if (res.ok) {
+        currentStreak.innerHTML = "";
+        totalHours.innerHTML = "";
+        totalToday.innerHTML = "";
+        currentStreakValue.textContent = `${data.current_streak} days`;
+        const hours = data.total_seconds / 3600;
+        const todayHours = data.seconds_today / 3600
+        totalHoursValue.textContent = hours < 0.1 ? `${Math.round(data.total_seconds)}s` : hours.toFixed(1) + 'h';
+        totalTodayValue.textContent = todayHours < 0.1 ? `${Math.round(data.seconds_today)}s` : hours.toFixed(1) + 'h';
+        currentStreak.appendChild(currentStreakLabel)
+        currentStreak.appendChild(currentStreakValue)
+        totalHours.appendChild(totalHoursLabel)
+        totalHours.appendChild(totalHoursValue)
+        totalToday.appendChild(totalTodayLabel)
+        totalToday.appendChild(totalTodayValue)
+    } else {
+        console.log(data.error);
+    }
+}
+
+async function getUserAnalytics() {
+    const currentUserId = await getCurrentUserId();
+    const res = await fetch(`http://localhost:3000/users/${currentUserId}/analytics`, {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        displayData(data);
+    } else {
+        console.log(data.error)
+    }
+}
+
+function buildWeekData(rows) {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sun, 1 = Mon, ...
+    const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysSinceMonday);
+    monday.setHours(0, 0, 0, 0);
+  
+    const result = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+  
+      const match = rows.find(r => new Date(r.day).toISOString().split('T')[0] === dateStr);
+      result.push({
+        day: days[i],
+        hours: match ? parseFloat(match.hours) : 0
+      });
+    }
+    console.log(result)
+    return result;
+}
+
+function displayData(rows) {
+    const ctx = document.getElementById('weeklyHoursChart');
+
+    const weekData = buildWeekData(rows);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: weekData.map(d => d.day),
+            datasets: [{
+                data: weekData.map(d => d.hours),
+                backgroundColor: '#1a1a1a',
+                borderRadius: 4,
+                borderSkipped: false,
+                barPercentage: 0.60,
+                categoryPercentage: 0.8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1a1a1a',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    borderWidth: 1,
+                    padding: 12,
+                    titleFont: { size: 13, weight: 'bold', family: "monospace" },
+                    bodyFont: { size: 12, family: "monospace" },
+                    cornerRadius: 8,
+                    callbacks: { label: (ctx) => `${ctx.parsed.y.toFixed(2)}h` }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    border: { color: '#000' },
+                    ticks: { color: '#000', font: { size: 13, family: "monospace", weight: 'bold' } }
+                },
+                y: {
+                    beginAtZero: true,
+                    border: { color: '#000' },
+                    grid: { color: 'rgba(0,0,0,0.08)' },
+                    ticks: { color: '#000', font: { size: 12, family: "monospace", weight: 'bold' }, callback: v => v + 'h' }
+                }
+            },
+            animation: { duration: 500, easing: 'easeOutQuart' }
+        }
+    });
 }
 
 async function getRepoFolders(repoId, folderParent = 0) {
@@ -1603,6 +1925,49 @@ async function getRepoFolder() {
         new buildFolderContent(folder.id, folder.foldername, folder.parent_folder_id);
     } else {
         return folder.error
+    }
+}
+
+async function startRepoSession() {
+    const userId = await getCurrentUserId();
+    const payload = {
+        repoId: parseInt(localStorage.getItem("currentRepo"))
+    }
+
+    const res = await fetch(`http://localhost:3000/repos/${userId}/sessionStart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+    })
+
+    const session = await res.json();
+
+    if (res.ok) {
+        localStorage.setItem("sessionId", session.id);
+    } else {
+        console.log(session.error)
+    }
+}
+
+async function endRepoSession(numNotesReviewed = 0, numFlashcardsReviewed = 0) {
+    const sessionId = parseInt(localStorage.getItem("sessionId"));
+    const payload = {
+        notesReviewed: numNotesReviewed,
+        flashcardsReviewed: numFlashcardsReviewed
+    }
+
+    const res = await fetch(`http://localhost:3000/repos/${sessionId}/sessionEnd`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+    })
+
+    const session = await res.json();
+
+    if (!res.ok) {
+        console.log(session.error)
     }
 }
 
@@ -1848,6 +2213,47 @@ async function deleteRepoDocument(fileId) {
     }
 }
 
+async function getRepoFlashcards(repoId, parentFolder = 0) {
+    const res = await fetch(`http://localhost:3000/repos/${repoId}/${parentFolder}/flashcards`, {
+        credentials: 'include'
+    })
+
+    const flashcards = await res.json();
+    const studyRepoFlashcardsContainer = document.getElementById("studyRepoFlashcardsContainer");
+    const flashcardsOfFolderContainer = document.getElementById("flashcardsOfFolderContainer");
+    let flashcardsCon = studyRepoFlashcardsContainer;
+
+    if (res.ok) {
+        if (flashcards.length === 0) {
+            const placeholderMessageCon = document.createElement("div")
+            const placeholderMessage = document.createElement("p")
+            placeholderMessage.classList.add("placeholderMessageElements");
+            placeholderMessage.textContent = "No flashcards yet"
+
+            placeholderMessageCon.appendChild(placeholderMessage)
+
+            if (parentFolder === 0) {
+                studyRepoFlashcardsContainer.appendChild(placeholderMessageCon);
+            } else {
+                flashcardsOfFolderContainer.innerHTML = "";
+                flashcardsOfFolderContainer.appendChild(placeholderMessageCon);
+            }
+        } else {
+            if (parentFolder === 0) {
+                parentFolder = null;
+            } else {
+                flashcardsOfFolderContainer.innerHTML = "";
+                flashcardsCon = flashcardsOfFolderContainer;
+            }
+            for (const flashcard of flashcards) {
+                if (flashcard.folder_id === parentFolder) {
+                    new createNoteCards(flashcard.id, flashcard.title, flashcard.content, flashcardsCon);
+                }
+            }
+        }
+    }
+}
+
 async function logout() {
     await fetch('http://localhost:3000/auth/logout', {
         method: 'POST',
@@ -1947,6 +2353,8 @@ async function showCurrentPage() {
         homePageWrapper.classList.remove("Hide");
         await getReposSummary();
         await getDocumentsSummary();
+        await getUserStats();
+        await  getUserAnalytics();
     } else if (currentPage === "settingsPage") {
         settingsPageWrapper.classList.remove("Hide");
         await populateSettingsInfo()

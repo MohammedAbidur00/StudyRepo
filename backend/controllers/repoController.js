@@ -8,6 +8,7 @@ const getRepo = async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Repo not found' })
         }
+        await pool.query('UPDATE userrepos SET last_accessed_at = NOW() WHERE id = $1 AND user_id = $2', [id, user_id])
         res.json(result.rows)
     } catch (err) {
         console.error(err)
@@ -248,8 +249,63 @@ const noteRepoFolder = async (req, res) => {
         res.status(200).json({ message: "Note successfully deleted."});
     } catch (err) {
         console.error(err)
-        res.status(500).json({ error: "Somethig went wrong" })
+        res.status(500).json({ error: "Something went wrong" })
     }
 }
 
-module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder, deleteRepoFolder, noteRepoFolder }
+const getFlashcards = async (req, res) => {
+    try {
+        const { id, parent } = req.params
+        const repo = await pool.query('SELECT * FROM userrepos WHERE id = $1', [id]);
+        if (repo.rows.length === 0) {
+            return res.status(404).json({ error: "Repo not found" })
+        } 
+        
+        if (parent === "0") {
+            const flashcards = await pool.query('SELECT * FROM repoflashcards WHERE repo_id = $1 AND folder_id IS NULL', [id])
+            res.status(200).json(flashcards.rows)
+        } else {
+            const flashcards = await pool.query('SELECT * FROM repoflashcards WHERE repo_id = $1 AND folder_id = $2', [id, parent])
+            res.status(200).json(flashcards.rows)
+        }
+        
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+}
+
+const startRepoSession = async (req, res) => {
+    try {
+        const { userId } = req.params
+        const { repoId } = req.body
+        const result = await pool.query('INSERT INTO useranalytics (user_id, repo_id) VALUES ($1, $2) RETURNING *', [userId, repoId])
+        res.status(201).json(result.rows[0])
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+}
+
+const endRepoSession = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { notesReviewed, flashcardsReviewed } = req.body
+        const result = await pool.query('UPDATE useranalytics SET notes_reviewed = $1, flashcards_reviewed = $2, ended_at = now() WHERE id = $3 RETURNING *', [notesReviewed, flashcardsReviewed, id])
+
+        const session = result.rows[0]
+
+        const seconds = Math.round((new Date(session.ended_at) - new Date(session.started_at)) / 1000)
+
+        await pool.query(
+            'UPDATE userstats SET total_seconds = total_seconds + $1 WHERE user_id = $2',
+            [seconds, session.user_id]
+        )
+        res.status(200).json(result.rows[0])
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Something went wrong" })
+    }
+}
+
+module.exports = { getRepo, getRepos, createRepo, updateRepo, deleteRepo, getRepoFolders, createRepoFolder, getNotes, createNote, updateNote, getNote, getRepoFolder, deleteRepoFolder, noteRepoFolder, startRepoSession, endRepoSession, getFlashcards }

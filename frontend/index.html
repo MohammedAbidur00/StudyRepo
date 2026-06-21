@@ -68,8 +68,33 @@
                     <div class="Sumary-Container-Label">
                         <p>ANALYTICS SUMMARY</p>
                     </div>
-                    <div class="Summary-Content">
-                        <p>No analytics summaries</p>
+                    <div id="recentAnalyticsSummary" class="Summary-Content">
+                        <div class="streakAndHoursCon">
+                            <div id="currentStreak"></div>
+                            <div id="totalHours"></div>
+                            <div id="totalToday"></div>
+                        </div>
+                        <div class="Summary-Analytics-Info-Con">
+                            <div class="chart-container">
+                                <div>
+                                    <div class="square"></div>
+                                    <div>
+                                        <p>Hours studied this week</p>
+                                    </div>
+                                </div>
+                                <canvas id="weeklyHoursChart"></canvas>
+                            </div>
+                            <div class="notesAndFlashcardBasicInfo">
+                                <div>
+                                    <p>Notes Reviewed</p>
+                                    <h2>12</h2>
+                                </div>
+                                <div>
+                                    <p>Flashcards Reviewed</p>
+                                    <h2>122</h2>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="Summary-Container">
@@ -232,6 +257,7 @@
                     <div>
                         <button id="addFolderBtn" class="Top-Bar-Btn"> + ADD FOLDER</button>
                         <button id="addNoteBtn" class="Top-Bar-Btn"> + ADD NOTE</button>
+                        <button id="addFlashcardBtn" class="Top-Bar-Btn"> + ADD FLASHCARD</button>
                         <button id="addDocumentBtn" class="Top-Bar-Btn"> + ADD DOCUMENT</button>
                         <button id="editStudyRepoBtn" class="Top-Bar-Btn">EDIT STUDYREPO</button>
                         <div id="studyRepoEditBtns" class="Hide">
@@ -326,6 +352,7 @@
                     <div>
                         <button id="folderAddFolderBtn" class="Top-Bar-Btn"> + ADD FOLDER</button>
                         <button id="folderAddNoteBtn" class="Top-Bar-Btn"> + ADD NOTE</button>
+                        <button id="folderAddFlashcardBtn" class="Top-Bar-Btn"> + ADD FLASHCARD</button>
                         <button class="Top-Bar-Btn">EDIT FOLDER</button>
                         <button class="Top-Bar-Btn material-icons">star</button>
                     </div>
@@ -386,6 +413,27 @@
     </div>
 
     <div id="dialogWrapper" class="Dialog-Wrapper Hide"></div>
+
+    <div id="fileFullViewerWrapper" class="Full-Viewer Hide">
+        <div class="Top-Bar">
+            <div class="Top-Bar-Header-Container">
+                <div class="App-Label-Container">
+                    <button id="fileFullViewerBackBtn" class="Header-Label-Btn">BACK</button>
+                </div>
+                <div class="Header-Page-Label-Container">
+                    <h1 id="documentName"></h1>
+                </div>
+            </div>
+            <div class="Top-Bar-Btns-Container">
+                <div>
+                    <button class="Top-Bar-Btn">DELETE</button>
+                    <button class="Top-Bar-Btn">FAVOURITE</button>
+                    <button class="Top-Bar-Btn material-icons">star</button>
+                </div>
+            </div>
+        </div>
+        <div id="viewerDocumentContentContainer" class="Page-Content"></div>
+    </div>
     
     <script type="module" src="index.js"></script>
     <script type="module" src="./noteEditor.js"></script>
