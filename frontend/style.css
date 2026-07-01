@@ -256,6 +256,10 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.35);
 }
 
+.Summary-Container-Repo-Con {
+    flex: 0.5 1 300px;
+}
+
 .Sumary-Container-Label {
     border: black 2px solid;
     border-top: none;
@@ -674,11 +678,11 @@ body {
     color: black;
 }
 
-#comfirmDeleteBtn, #comfirmFolderNameBtn, #confirmNoteNameBtn, #comfirmFolderOfFolderNameBtn, #confirmNoteOfFolderNameBtn, #comfirmFolderDeleteBtn, #comfirmNoteDeleteBtn, #comfirmDocumentDeleteBtn {
+#comfirmDeleteBtn, #comfirmFolderNameBtn, #confirmNoteNameBtn, #comfirmFolderOfFolderNameBtn, #confirmNoteOfFolderNameBtn, #comfirmFolderDeleteBtn, #comfirmNoteDeleteBtn, #comfirmDocumentDeleteBtn, #comfirmStartGoalSelectionBtn {
     border-right: black 0.95px solid;
 }
 
-#confirmCancelBtn, #confirmCancelFolderBtn, #confirmCancelNoteBtn, #confirmCancelFolderOfFolderBtn, #confirmCancelNoteOfFolderBtn, #confirmFolderCancelBtn, #confirmNoteCancelBtn, #confirmDocumentCancelBtn {
+#confirmCancelBtn, #confirmCancelFolderBtn, #confirmCancelNoteBtn, #confirmCancelFolderOfFolderBtn, #confirmCancelNoteOfFolderBtn, #confirmFolderCancelBtn, #confirmNoteCancelBtn, #confirmDocumentCancelBtn, #confirmGoalSelectionBtn {
     border-left: black 0.95px solid;
 }
 
@@ -980,6 +984,17 @@ ul[data-type="taskList"] li > div > p {
     position: relative;
 }
 
+.recentGoalCard {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    border: black 1.5px solid;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
 .moreInfoOverlay {
     position: absolute;
     padding: 4px;
@@ -1146,8 +1161,9 @@ ul[data-type="taskList"] li > div > p {
 }
 
 .notesAndFlashcardBasicInfo div p {
-    font-size: 17px;
-    font-family: 'Courier New', Courier, monospace;
+    font-size: 15px;
+    font-family: monospace;
+    font-style: italic;
 }
 
 .notesAndFlashcardBasicInfo div h2 {
@@ -1200,6 +1216,129 @@ ul[data-type="taskList"] li > div > p {
     background-color: white;
     padding: 4px 6px;
     font-weight: bold;
+}
+
+.duration-group {
+    width: fit-content;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.duration-group, .duration-group div {
+    display: flex;
+    flex-direction: row;
+    border-radius: 6px;
+    gap: 5px;
+}
+
+.duration-group div {
+    align-items: center;
+    border: black 1.5px solid;
+    padding: 5px;
+}
+
+.stepper button {
+    border: black 1.5px solid;
+    padding: 5px 8px;
+    color: black;
+    background-color: white;
+    border-radius: 5px;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.goalSelectedStyle {
+    background-color: black;
+    color: white;
+}
+
+.Goal-Card-Container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 3px 8px;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.Goal-Card-Type-Container p {
+    font-size: 20px;
+    font-family: monospace;
+}
+
+.Goal-Card-More-Info-Container {
+    border-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.Goal-Card-More-Info-Container div {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 4px;
+    text-align: center;
+}
+
+.Goal-Card-More-Info-Container div p {
+    font-size: 15px;
+}
+
+.Goal-Card-Summary-Type-Container p {
+    font-size: 13px;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.Goal-Card-Summary-More-Info-Container {
+    border-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: stretch;
+    gap: 5px;
+}
+
+.Goal-Card-Summary-More-Info-Container div {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 4px;
+    text-align: center;
+}
+
+.summaryGoalType {
+    border: black 1.5px solid;
+    border-radius: 6px;
+    padding: 4px;
+    text-align: center;
+}
+
+.Goal-Card-Summary-More-Info-Container div p {
+    font-size: 13px;
+}
+
+#recentGoalsSummary {
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.Selected-Goal-Card-Style {
+    opacity: 0.5;
+}
+
+.noSelectCon .Goal-Card-Container {
+    background-color: black;
+    color: white;
+}
+
+.noSelectCon div div div {
+    background-color: white;
+    color: black;
 }
 
 :focus {
@@ -1255,7 +1394,156 @@ button {
     display: none;
 }
 
+/* ===== CALENDAR CONTAINER ===== */
+.flatpickr-calendar.flatpickr-calendar {
+    font-family: monospace;
+    background: white;
+    border: 1.5px solid #000;
+    border-radius: 8px;
+    width: 320px;
+    margin-top: 4px;
+  }
+  
+  /* kill the little triangle pointer (clashes with the hard-edged box look) */
+.flatpickr-calendar.flatpickr-calendar:before,
+.flatpickr-calendar.flatpickr-calendar:after {
+    display: none;
+}
+  
+  /* ===== HEADER BAR (month/year row) ===== */
+  .flatpickr-calendar .flatpickr-months {
+  
+    padding: 8px 0 0 0;
+  }
+  .flatpickr-calendar .flatpickr-current-month {
+    font-family: inherit;
+    font-weight: 700;
+    color: #000;
+  }
+  .flatpickr-calendar .flatpickr-current-month .flatpickr-monthDropdown-months,
+  .flatpickr-calendar .flatpickr-current-month {
+    font-family: inherit;
+    font-weight: 700;
+    color: #000;
+    border-radius: 8px;
+    padding: 1px 6px;
+    border: black 1.5px solid;
+    margin: 0px;
+  }
+  
+  /* ===== PREV/NEXT ARROWS ===== */
+  .flatpickr-calendar .flatpickr-prev-month,
+  .flatpickr-calendar .flatpickr-next-month {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    top: 8px;
+  }
+  .flatpickr-calendar .flatpickr-innerContainer {
+    margin-top: 5px;
+  }
+  .flatpickr-calendar .flatpickr-prev-month svg,
+.flatpickr-calendar .flatpickr-next-month svg {
+  width: 25px !important;
+  height: 25px !important;
+}
+  .flatpickr-calendar .flatpickr-prev-month:hover,
+  .flatpickr-calendar .flatpickr-next-month:hover {
+    background: transparent;
+  }
+  .flatpickr-calendar .flatpickr-prev-month svg,
+.flatpickr-calendar .flatpickr-next-month svg,
+.flatpickr-calendar .flatpickr-prev-month svg path,
+.flatpickr-calendar .flatpickr-next-month svg path {
+    margin-top: 15px;
+    stroke: #000;
+    stroke-width: 3px;
+}
+  .flatpickr-calendar .flatpickr-prev-month:hover svg,
+.flatpickr-calendar .flatpickr-next-month:hover svg,
+.flatpickr-calendar .flatpickr-prev-month:hover svg path,
+.flatpickr-calendar .flatpickr-next-month:hover svg path {
+    fill: #000;
+}
+  
+  /* ===== WEEKDAY LETTER ROW ===== */
+  .flatpickr-calendar .flatpickr-weekdays {
+    background: #fff;
+  }
+  .flatpickr-calendar .flatpickr-weekday {
+    font-family: inherit;
+    font-weight: 700;
+    color: #000;
+    background: transparent;
+  }
+  
+  /* ===== DAY CELLS ===== */
+  .flatpickr-calendar .flatpickr-day.flatpickr-day {
+    font-family: inherit;
+    font-weight: 700;
+    color: #000;
+    border: 1.5px solid transparent;
+    border-radius: 6px;
+  }
+  
+  /* hover */
+  .flatpickr-calendar .flatpickr-day:hover.flatpickr-day:hover {
+    background: #eee;
+    border-color: #000;
+  }
+  
+  /* today (not selected) */
+  .flatpickr-calendar .flatpickr-day.today.today {
+    border-color: #000;
+    background: #fff;
+  }
+  
+  /* selected day */
+  .flatpickr-calendar .flatpickr-day.selected.selected {
+    background: #000;
+    border-color: #000;
+    color: #fff;
+  }
+  
+  /* days from prev/next month (greyed padding days) */
+  .flatpickr-calendar .flatpickr-day.prevMonthDay.prevMonthDay,
+  .flatpickr-calendar .flatpickr-day.nextMonthDay.nextMonthDay {
+    color: #ccc;
+    border-color: transparent;
+  }
+  
+  /* disabled days (before minDate) */
+  .flatpickr-calendar .flatpickr-day.flatpickr-disabled.flatpickr-disabled {
+    color: #ddd;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+  
+  /* ===== THE INPUT FIELD ITSELF ===== */
+  input.flatpickr-input.flatpickr-input {
+    font-family: monospace;
+    font-weight: 100;
+    color: black;
+    background: white;
+    border: 1.5px solid #000;
+    border-radius: 6px;
+    padding: 2px 5px;
+    font-size: 14px;
+    max-width: 170px;
+    text-align: center;
+  }
+input.flatpickr-input.flatpickr-input:focus {
+    outline: none;
+}
+
 #studyRepoEditBtns.Hide {
+    display: none;
+}
+
+#goalsEditBtns.Hide {
     display: none;
 }
 

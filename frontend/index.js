@@ -1,5 +1,7 @@
 import { getNoteContent, clearhistory } from "./noteEditor";
 import Chart from 'chart.js/auto';
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.css";
 
 const headerCurrentUserLabelContainer = document.getElementById("headerCurrentUserLabelContainer");
 const loginPageWrapper = document.getElementById("loginPageWrapper");
@@ -13,6 +15,8 @@ const studyRepoNotePageWrapper = document.getElementById("studyRepoNotePageWrapp
 const studyRepoFolderPageWrapper = document.getElementById("studyRepoFolderPageWrapper");
 const addDocumentPageWrapper = document.getElementById("addDocumentPageWrapper");
 const studyRepoDocumentsPageWrapper = document.getElementById("studyRepoDocumentsPageWrapper");
+const goalsPageWrapper = document.getElementById("goalsPageWrapper");
+const createGoalPageWrapper = document.getElementById("createGoalPageWrapper");
 
 const goToRegisterBtn = document.getElementById("goToRegisterBtn");
 const goToLoginBtn = document.getElementById("goToLoginBtn");
@@ -44,6 +48,8 @@ const studyRepoFolderBackBtn = document.getElementById("studyRepoFolderBackBtn")
 const addDocumentBackBtn = document.getElementById("addDocumentBackBtn");
 const studyRepoDocumentsBackBtn = document.getElementById("studyRepoDocumentsBackBtn");
 const createFlashcardBackBtn = document.getElementById("createFlashcardBackBtn");
+const goalsBackBtn = document.getElementById("goalsBackBtn");
+const createGoalBackBtn = document.getElementById("createGoalBackBtn");
 
 const loginPageMessageBox = document.getElementById("loginPageMessageBox");
 const registerPageMessageBox = document.getElementById("registerPageMessageBox");
@@ -98,6 +104,9 @@ const recentAnalyticsSummary = document.getElementById("recentAnalyticsSummary")
 const addDocumentPageMessageBox = document.getElementById("addDocumentPageMessageBox");
 const createFlashcardPageWrapper = document.getElementById("createFlashcardPageWrapper");
 const addFlashcardBtn = document.getElementById("addFlashcardBtn");
+const addGoalBtn = document.getElementById("addGoalBtn");
+const editGoalsBtn = document.getElementById("editGoalsBtn");
+const openStudyGoals = document.getElementById("openStudyGoals");
 
 const createFlashcardTitleInput = document.getElementById("createFlashcardTitleInput");
 const createFlashcardAnswerInput = document.getElementById("createFlashcardAnswerInput");
@@ -105,10 +114,40 @@ const saveFlashcardBtn = document.getElementById("saveFlashcardBtn");
 const cancelFlashcardBtn = document.getElementById("cancelFlashcardBtn");
 const createFlashcardPageMessageBox = document.getElementById("createFlashcardPageMessageBox");
 const flashcardViewerWrapper = document.getElementById("flashcardViewerWrapper");
+const studyGoalsContentContainer = document.getElementById("studyGoalsContentContainer");
+
+const dailyGoalBtn = document.getElementById("dailyGoalBtn");
+const weeklyGoalBtn = document.getElementById("weeklyGoalBtn");
+const monthlyGoalBtn = document.getElementById("monthlyGoalBtn");
+const yearlyGoalBtn = document.getElementById("yearlyGoalBtn");
+const customGoalBtn = document.getElementById("customGoalBtn");
+const datePickerContainer = document.getElementById("datePickerContainer");
+
+const studyTimeGoal = document.getElementById("studyTimeGoal");
+const notesToReviewGoal = document.getElementById("notesToReviewGoal");
+const flashcardsToReviewGoal = document.getElementById("flashcardsToReviewGoal");
+const saveGoalBtn = document.getElementById("saveGoalBtn");
+const cancelGoalBtn = document.getElementById("cancelGoalBtn");
+
+const studyDurationContainer = document.getElementById("studyDurationContainer");
+const numNotesContainer = document.getElementById("numNotesContainer");
+const numFlashcardsContainer = document.getElementById("numFlashcardsContainer");
+
+const recentGoalsSummary = document.getElementById("recentGoalsSummary");
+
+const goalDurationOrNumConLabel = document.getElementById("goalDurationOrNumConLabel")
+const setStreakConditionBtn = document.getElementById("setStreakConditionBtn");
+const cancelStreakConditionBtn = document.getElementById("cancelStreakConditionBtn");
+const confirmStreakConditionBtn = document.getElementById("confirmStreakConditionBtn");
 
 let repoToDelete = "";
 let isMultiSelect = false;
 let reposToDelete = [];
+
+let hours = 0
+let minutes = 30;
+let noteCount = 5;
+let cardCount = 20;
 
 const editStudyRepoBtn = document.getElementById("editStudyRepoBtn");
 let studyRepoEditMode = false;
@@ -117,8 +156,49 @@ let folderToDelete = "";
 let noteToDelete = "";
 let documentToDelete = "";
 
+let showCalendar = false;
+let timeframeOption = "";
+let goalTypeOption = "study_time";
+let endTime = "";
+
+let chartInstance = null;
+
+let goalSelectionMode = false;
+let goalsSelected = [];
+
 const notesViewed = [];
 const flashcardsViewed = [];
+
+document.querySelectorAll('.stepper button').forEach(btn => {
+    btn.onclick = () => {
+      const amt = Number(btn.dataset.amount);
+      if (btn.dataset.target === 'hours') {
+        hours = Math.max(0, Math.min(23, hours + amt));
+        document.getElementById('hours').textContent = hours;
+      } else {
+        minutes = Math.max(0, Math.min(55, minutes + amt));
+        document.getElementById('minutes').textContent = minutes;
+      }
+    };
+});
+
+document.getElementById('inc-notes').onclick = () => {
+    noteCount += 1;
+    document.getElementById('notes-value').textContent = noteCount;
+};
+document.getElementById('dec-notes').onclick = () => {
+    noteCount = Math.max(1, noteCount - 1);
+    document.getElementById('notes-value').textContent = noteCount;
+};
+
+document.getElementById('inc-cards').onclick = () => {
+    cardCount += 5;
+    document.getElementById('cards-value').textContent = cardCount;
+};
+document.getElementById('dec-cards').onclick = () => {
+    cardCount = Math.max(5, cardCount - 5);
+    document.getElementById('cards-value').textContent = cardCount;
+};
 
 class createStudyRepoCards {
     constructor(repoId, repoName, repoDescription) {
@@ -956,6 +1036,268 @@ class createDialog {
     }
 }
 
+class createStudyGoalContent {
+    constructor(userId) {
+        this.userId = userId
+
+        studyGoalsContentContainer.innerHTML = "";
+
+        this.studyGoalsLimitedContainer = document.createElement("div");
+        this.studyGoalsUnlimitedContainer = document.createElement("div");
+        this.studyGoalsCompletedContainer = document.createElement("div");
+        this.studyGoalsUncompletedContainer = document.createElement("div");
+
+        this.studyGoalsLimitedTitleContainer = document.createElement("div");
+        this.studyGoalsUnlimitedTitleContainer = document.createElement("div");
+        this.studyGoalsCompletedTitleContainer = document.createElement("div");
+        this.studyGoalsUncompletedTitleContainer = document.createElement("div");
+
+        this.studyGoalsLimitedElementsContainer = document.createElement("div");
+        this.studyGoalsUnlimitedElementsContainer = document.createElement("div");
+        this.studyGoalsCompletedElementsContainer = document.createElement("div");
+        this.studyGoalsUncompletedElementsContainer = document.createElement("div");
+
+        this.studyGoalsLimitedTitle = document.createElement("h2");
+        this.studyGoalsUnlimitedTitle = document.createElement("h2");
+        this.studyGoalsCompletedTitle = document.createElement("h2");
+        this.studyGoalsUncompletedTitle = document.createElement("h2");
+
+        this.studyGoalsLimitedContainer.classList.add("Study-Repo-Content-Container");
+        this.studyGoalsUnlimitedContainer.classList.add("Study-Repo-Content-Container");
+        this.studyGoalsCompletedContainer.classList.add("Study-Repo-Content-Container");
+        this.studyGoalsUncompletedContainer.classList.add("Study-Repo-Content-Container");
+
+        this.studyGoalsLimitedTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+        this.studyGoalsUnlimitedTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+        this.studyGoalsCompletedTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+        this.studyGoalsUncompletedTitleContainer.classList.add("Study-Repo-Content-Container-Title");
+
+        this.studyGoalsLimitedElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyGoalsUnlimitedElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyGoalsCompletedElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+        this.studyGoalsUncompletedElementsContainer.classList.add("Study-Repo-Content-Container-Elements");
+
+        this.studyGoalsLimitedElementsContainer.id = "studyGoalsLimitedContainer"
+        this.studyGoalsUnlimitedElementsContainer.id = "studyGoalsUnlimitedContainer";
+        this.studyGoalsCompletedElementsContainer.id = "studyGoalsCompletedContainer";
+        this.studyGoalsUncompletedElementsContainer.id = "studyGoalsUncompletedContainer";
+
+        this.studyGoalsCompletedElementsContainer.classList.add("noSelectCon");
+        this.studyGoalsUncompletedElementsContainer.classList.add("noSelectCon");
+
+        this.studyGoalsLimitedTitle.textContent = "LIMITED GOALS";
+        this.studyGoalsUnlimitedTitle.textContent = "UNLIMITED GOALS";
+        this.studyGoalsCompletedTitle.textContent = "COMPLETED GOALS";
+        this.studyGoalsUncompletedTitle.textContent = "UNCOMPLETED GOALS";
+
+        this.studyGoalsLimitedTitleContainer.appendChild(this.studyGoalsLimitedTitle);
+        this.studyGoalsUnlimitedTitleContainer.appendChild(this.studyGoalsUnlimitedTitle);
+        this.studyGoalsCompletedTitleContainer.appendChild(this.studyGoalsCompletedTitle);
+        this.studyGoalsUncompletedTitleContainer.appendChild(this.studyGoalsUncompletedTitle);
+
+        this.studyGoalsLimitedContainer.appendChild(this.studyGoalsLimitedTitleContainer);
+        this.studyGoalsUnlimitedContainer.appendChild(this.studyGoalsUnlimitedTitleContainer);
+        this.studyGoalsCompletedContainer.appendChild(this.studyGoalsCompletedTitleContainer)
+        this.studyGoalsUncompletedContainer.appendChild(this.studyGoalsUncompletedTitleContainer)
+
+        this.studyGoalsLimitedContainer.appendChild(this.studyGoalsLimitedElementsContainer);
+        this.studyGoalsUnlimitedContainer.appendChild(this.studyGoalsUnlimitedElementsContainer);
+        this.studyGoalsCompletedContainer.appendChild(this.studyGoalsCompletedElementsContainer);
+        this.studyGoalsUncompletedContainer.appendChild(this.studyGoalsUncompletedElementsContainer);
+
+        studyGoalsContentContainer.appendChild(this.studyGoalsLimitedContainer);
+        studyGoalsContentContainer.appendChild(this.studyGoalsUnlimitedContainer);
+        studyGoalsContentContainer.appendChild(this.studyGoalsCompletedContainer);
+        studyGoalsContentContainer.appendChild(this.studyGoalsUncompletedContainer);
+    }
+}
+
+class createGoalCard {
+    constructor(goalId, goalTimeframe, goalType, goalStartedAt, goalWillEndAt, goalLength, goalContainer) {
+        this.goalId = goalId;
+        this.goalTimeframe = goalTimeframe;
+        this.goalType = goalType;
+        this.goalStartedAt = goalStartedAt;
+        this.goalWillEndAt = goalWillEndAt;
+        this.goalLength = goalLength;
+        this.goalContainer = goalContainer;
+        this.selected = false;
+
+        const [startedAtDate, startedAtTime] = this.normaliseTime(this.goalStartedAt);
+        const [willEndAtDate, willEndAtTime] = this.normaliseTime(this.goalWillEndAt);
+
+        this.goalCard = document.createElement("div");
+        this.goalCard.classList.add("Goal-Card-Container");
+
+        this.goalCardTypeCon = document.createElement("div");
+        this.goalCard.classList.add("Goal-Card-Type-Container")
+        this.goalCardType = document.createElement("p");
+        if (this.goalType === "study_time") {
+            this.goalCardType.textContent = "Study Time";
+            this.goalCardLength = document.createElement("p");
+            this.goalCardLength.textContent = `Duration: ${this.workOutAppropriateDuration(Number(this.goalLength))}`;
+        } else if (this.goalType === "notes_to_review") {
+            this.goalCardType.textContent = "Notes To Review";
+            this.goalCardLength = document.createElement("p");
+            this.goalCardLength.textContent = `Number: ${this.goalLength} notes`;
+        } else if (this.goalType === "flashcards_to_review") {
+            this.goalCardType.textContent = "Flashcards To Review";
+            this.goalCardLength = document.createElement("p");
+            this.goalCardLength.textContent = `Number: ${this.goalLength} cards`;
+        }
+        this.goalCardTypeCon.appendChild(this.goalCardType)
+
+        this.goalCardMoreInfoCon = document.createElement("div");
+        this.goalCardMoreInfoCon.classList.add("Goal-Card-More-Info-Container")
+        this.goalCardTimeframeCon = document.createElement("div");
+        this.goalStartedAtCon = document.createElement("div");
+        this.goalWillEndAtCon = document.createElement("div");
+        this.goalLengthCon = document.createElement("div")
+
+        this.goalCardTimeframe = document.createElement("p");
+        this.goalCardTimeframe.textContent = `timeframe: ${this.goalTimeframe}`;
+        this.goalCardTimeframeCon.appendChild(this.goalCardTimeframe)
+        this.goalStartedAtTime = document.createElement("p");
+        this.goalStartedAtTime.textContent = `start: ${startedAtDate} at ${startedAtTime}`;
+        this.goalStartedAtCon.appendChild(this.goalStartedAtTime)
+        this.goalWillEndAtTime = document.createElement("p");
+        this.goalWillEndAtTime.textContent = `end: ${willEndAtDate} at ${willEndAtTime}`;
+        this.goalWillEndAtCon.appendChild(this.goalWillEndAtTime)
+        
+        this.goalLengthCon.appendChild(this.goalCardLength)
+
+        this.goalCardMoreInfoCon.appendChild(this.goalCardTimeframeCon);
+        this.goalCardMoreInfoCon.appendChild(this.goalStartedAtCon);
+        this.goalCardMoreInfoCon.appendChild(this.goalWillEndAtCon);
+        this.goalCardMoreInfoCon.appendChild(this.goalLengthCon);
+
+        this.goalCard.appendChild(this.goalCardTypeCon)
+        this.goalCard.appendChild(this.goalCardMoreInfoCon)
+
+        this.goalContainer.appendChild(this.goalCard);
+
+        this.goalCard.addEventListener("click", () => {
+            if (goalSelectionMode && !(this.goalCard.parentElement.classList.contains("noSelectCon"))) {
+                this.selected = !this.selected;
+                if (this.selected) {
+                    goalsSelected.push(this.goalId);
+                    this.goalCard.classList.remove("Selected-Goal-Card-Style")
+                } else {
+                    const index = goalsSelected.indexOf(this.goalId)
+                    goalsSelected.splice(index, 1);
+                    this.goalCard.classList.add("Selected-Goal-Card-Style")
+                }
+            }
+            if (goalsSelected.length > 0) {
+                confirmStreakConditionBtn.classList.remove("Hide");
+            } else {
+                confirmStreakConditionBtn.classList.add("Hide");
+            }
+            console.log(goalsSelected);
+        })
+    }
+
+    normaliseTime(dateAndTime) {
+        const dateObj = new Date(dateAndTime);
+
+        const date = dateObj.toLocaleDateString("en-GB");
+        const time = dateObj.toLocaleTimeString("en-GB", {
+            hour12: false
+        });
+
+        return [date, time];
+    }
+
+    workOutAppropriateDuration(durationInMins) {
+        console.log(durationInMins);
+        if (durationInMins % 60 === durationInMins) {
+            return durationInMins + "m";
+        } else {
+            let minutes = durationInMins % 60
+            let hours = (durationInMins - minutes) / 60
+            return `${hours}h and ${minutes}m`
+        }
+    }
+}
+
+class createGoalsReminderCards {
+    constructor(goalId, goalEndTime, goalCompleted, goalLength, goalType) {
+        this.goalId = goalId;
+        this.goalEndTime = goalEndTime;
+        this.goalCompleted = goalCompleted;
+        this.goalLength = goalLength;
+        this.goalType = goalType;
+
+        const dateObj = new Date(this.goalEndTime);
+
+        const date = dateObj.toLocaleDateString("en-GB");
+        const time = dateObj.toLocaleTimeString("en-GB", {
+            hour12: false
+        });
+
+        this.card = document.createElement("div");
+        this.card.classList.add("recentGoalCard");
+
+        this.cardTypeCon = document.createElement("div");
+        this.cardTypeCon.classList.add("Goal-Card-Summary-Type-Container")
+        this.cardType = document.createElement("p");
+        this.cardType.classList.add("summaryGoalType");
+        this.cardType.textContent = this.goalType;
+        if (this.goalType === "study_time") {
+            this.cardType.textContent = "Study";
+        } else if (this.goalType === "notes_to_review") {
+            this.cardType.textContent = "Notes";
+        } else if (this.goalType === "flashcards_to_review") {
+            this.cardType.textContent = "Flashcards";
+        }
+        this.cardTypeCon.appendChild(this.cardType);
+
+        this.moreInfoCon = document.createElement("div");
+        this.moreInfoCon.classList.add("Goal-Card-Summary-More-Info-Container")
+
+        this.endTimeCon = document.createElement("div");
+        this.endTime = document.createElement("p");
+        this.endTime.textContent = `ends on ${date} at ${time}`;
+        this.endTimeCon.appendChild(this.endTime);
+
+        this.lengthCon = document.createElement("div");
+        this.length = document.createElement("p");
+        if (this.goalType === "study_time") {
+            this.length.textContent = this.workOutAppropriateDuration(this.goalLength);
+        } else if (this.goalType === "notes_to_review") {
+            this.length.textContent = `${this.goalLength} notes`;
+        } else if (this.goalType === "flashcards_to_review") {
+            this.length.textContent = `${this.goalLength} cards`;
+        }
+        this.lengthCon.appendChild(this.length);
+
+        this.completedCon = document.createElement("div");
+        this.completed = document.createElement("p");
+        this.completed.textContent = `you have until ${date} at ${time}`;
+        this.completedCon.appendChild(this.completed);
+
+        this.moreInfoCon.appendChild(this.endTimeCon);
+        this.moreInfoCon.appendChild(this.lengthCon);
+        this.moreInfoCon.appendChild(this.completedCon);
+
+        this.card.appendChild(this.cardTypeCon);
+        this.card.appendChild(this.moreInfoCon);
+
+        recentGoalsSummary.appendChild(this.card);
+    }
+
+    workOutAppropriateDuration(durationInMins) {
+        console.log(durationInMins);
+        if (durationInMins % 60 === durationInMins) {
+            return durationInMins + "m";
+        } else {
+            let minutes = durationInMins % 60
+            let hours = (durationInMins - minutes) / 60
+            return `${hours}h and ${minutes}m`
+        }
+    }
+}
+
 goToRegisterBtn.addEventListener("click", async () => {
     setCurrentPage("registerPage");
     await showCurrentPage()
@@ -1062,6 +1404,26 @@ createFlashcardBackBtn.addEventListener("click", async () => {
     await showCurrentPage();
 })
 
+goalsBackBtn.addEventListener("click", async () => {
+    setCurrentPage("homePage");
+    await showCurrentPage();
+})
+
+createGoalBackBtn.addEventListener("click", async () => {
+    setCurrentPage("goalsPage");
+    await showCurrentPage();
+})
+
+openStudyGoals.addEventListener("click", async () => {
+    setCurrentPage("goalsPage");
+    await showCurrentPage();
+})
+
+addGoalBtn.addEventListener("click", async () => {
+    setCurrentPage("createGoalPage");
+    await showCurrentPage();
+})
+
 addFlashcardBtn.addEventListener("click", async () => {
     setCurrentPage("addFlashcardPage");
     await showCurrentPage();
@@ -1155,6 +1517,64 @@ deleteReposBtn.addEventListener("click", async () => {
         }
     ]
     new createDialog(dialogText, btnsArr)
+})
+
+setStreakConditionBtn.addEventListener("click", async () => {
+    dialogWrapper.classList.remove("Hide")
+    dialogWrapper.innerHTML = "";
+    document.body.style.overflow = "hidden";
+    const dialogText = "You will now select goals which you will ccomplete to contribute to your current streak. Click start below to continue."
+    const btnsArr = [
+        {
+            btnId: "comfirmStartGoalSelectionBtn",
+            btnText: "Start",
+        },
+        {
+            btnId: "confirmCancelGoalSelectionBtn",
+            btnText: "Cancel"
+        }
+    ]
+    new createDialog(dialogText, btnsArr)
+})
+
+cancelStreakConditionBtn.addEventListener("click", () => {
+    goalsSelected = [];
+    cancelStreakConditionBtn.classList.add("Hide");
+    setStreakConditionBtn.classList.remove("Hide");
+    removeSelectionStyle();
+})
+
+confirmStreakConditionBtn.addEventListener("click", async () => {
+    const resultArr = [];
+    for (const goalId of goalsSelected) {
+        const result = await updateGoalStreakStatus(goalId, true);
+        resultArr.push(result)
+    }
+    if (resultArr.every(value => value === true)) {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = "Goals have been added to the streak, complete them daily to increase it."
+        const btnsArr = [
+            {
+                btnId: "streakMadeOkayBtn",
+                btnText: "Okay",
+            }
+        ]
+        new createDialog(dialogText, btnsArr)
+    } else {
+        dialogWrapper.classList.remove("Hide")
+        dialogWrapper.innerHTML = "";
+        document.body.style.overflow = "hidden";
+        const dialogText = "Adding goals to streak was unsuccessful, try again later."
+        const btnsArr = [
+            {
+                btnId: "streakNotMadeOkayBtn",
+                btnText: "Okay",
+            }
+        ]
+        new createDialog(dialogText, btnsArr)
+    }
 })
 
 loginButton.addEventListener("click", async () => {
@@ -1260,6 +1680,24 @@ function clearPreviews() {
     selectedFiles = []
     container.innerHTML = "";
     container.classList.add("Hide");
+}
+
+async function updateGoalStreakStatus(goalId, status) {
+    const payload = {
+        inStreak: status
+    }
+    const res = await fetch(`http://localhost:3000/users/${goalId}/streak`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        return true;
+    } else {
+        return false
+    }
 }
 
 async function uploadDocuments() {
@@ -1538,8 +1976,56 @@ document.addEventListener("click", async (event) => {
         document.body.style.overflowY = "scroll";
     } else if (event.target.id === "comfirmDocumentDeleteBtn") {
         await deleteRepoDocument(documentToDelete);
+    } else if (event.target.id === "confirmCancelGoalSelectionBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+    } else if (event.target.id === "comfirmStartGoalSelectionBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+        setStreakConditionBtn.classList.add("Hide");
+        cancelStreakConditionBtn.classList.remove("Hide");
+        addSelectionStyle();
+    } else if (event.target.id === "streakMadeOkayBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+        leaveStreakSet();
+        location.reload();
+    } else if (event.target.id === "streakNotMadeOkayBtn") {
+        dialogWrapper.classList.add("Hide")
+        document.body.style.overflowY = "scroll";
+        leaveStreakSet();
+        location.reload();
     }
 })
+
+function leaveStreakSet() {
+    goalsSelected = [];
+    addGoalBtn.disabled = false;
+    editGoalsBtn.disabled = false;
+    document.querySelectorAll(".Goal-Card-Container").forEach(card => {
+        card.classList.remove("Selected-Goal-Card-Style");
+    })
+}
+
+function addSelectionStyle() {
+    goalSelectionMode = true;
+    addGoalBtn.disabled = true;
+    editGoalsBtn.disabled = true;
+    document.querySelectorAll(".Goal-Card-Container").forEach(card => {
+        if (!(card.parentElement.classList.contains("noSelectCon"))) {
+            card.classList.add("Selected-Goal-Card-Style");
+        }
+    })
+}
+
+function removeSelectionStyle() {
+    goalSelectionMode = false;
+    addGoalBtn.disabled = false;
+    editGoalsBtn.disabled = false;
+    document.querySelectorAll(".Goal-Card-Container").forEach(card => {
+        card.classList.remove("Selected-Goal-Card-Style");
+    })
+}
 
 studyRepoCardsContainer.addEventListener("click", (event) => {
     if (isMultiSelect) {
@@ -1658,6 +2144,48 @@ addDocumentBtn.addEventListener("click", async () => {
     await showCurrentPage();
 })
 
+dailyGoalBtn.addEventListener("click", () => {
+    timeframeOption = "daily";
+})
+
+weeklyGoalBtn.addEventListener("click", () => {
+    timeframeOption = "weekly";
+})
+
+monthlyGoalBtn.addEventListener("click", () => {
+    timeframeOption = "monthly";
+})
+
+yearlyGoalBtn.addEventListener("click", () => {
+    timeframeOption = "yearly";
+})
+
+customGoalBtn.addEventListener("click", () => {
+    timeframeOption = "custom"
+    showCalendar = !showCalendar;
+    if (showCalendar) {
+        datePickerContainer.classList.remove("Hide");
+        customGoalDatePicker();
+    } else {
+        datePickerContainer.classList.add("Hide");
+    }
+})
+
+studyTimeGoal.addEventListener("click", () => {
+    goalTypeOption = "study_time"
+    showSelectedGoalTypeStyle();
+})
+
+notesToReviewGoal.addEventListener("click", () => {
+    goalTypeOption = "notes_to_review"
+    showSelectedGoalTypeStyle();
+})
+
+flashcardsToReviewGoal.addEventListener("click", () => {
+    goalTypeOption = "flashcards_to_review"
+    showSelectedGoalTypeStyle();
+})
+
 async function getAllUserDocuments() {
     const userId = await getCurrentUserId();
     const res = await fetch(`http://localhost:3000/files/${userId}/files`, {
@@ -1750,6 +2278,200 @@ async function populateSettingsInfo() {
     const currentUser = await getCurrentuser();
 
     showChangeUsernameInput.value = currentUser;
+}
+
+async function getStudyGoals() {
+    const userId = await getCurrentUserId();
+    const res = await fetch(`http://localhost:3000/users/${userId}/goals`, {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        new createStudyGoalContent(data.user_id)
+        const studyGoalsLimitedContainer = document.getElementById("studyGoalsLimitedContainer")
+        const studyGoalsUnlimitedContainer = document.getElementById("studyGoalsUnlimitedContainer")
+        const studyGoalsCompletedContainer = document.getElementById("studyGoalsCompletedContainer")
+        const studyGoalsUncompletedContainer = document.getElementById("studyGoalsUncompletedContainer");
+
+        for (const goals of data) {
+            if (goals.goal_restart === false) {
+                new createGoalCard(goals.id, goals.goal_timeframe, goals.goal_type, goals.start_time, goals.end_time, goals.goal_length, studyGoalsLimitedContainer)
+            }
+        }
+
+        for (const goals of data) {
+            if (goals.goal_restart === true) {
+                new createGoalCard(goals.id, goals.goal_timeframe, goals.goal_type, goals.start_time, goals.end_time, goals.goal_length, studyGoalsUnlimitedContainer)
+            }
+        }
+
+        for (const goals of data) {
+
+            if (goals.completed === true) {
+                new createGoalCard(goals.id, goals.goal_timeframe, goals.goal_type, goals.start_time, goals.end_time, goals.goal_length, studyGoalsCompletedContainer)
+            }
+        }
+
+        for (const goals of data) {
+            if (goals.completed === false) {
+                new createGoalCard(goals.id, goals.goal_timeframe, goals.goal_type, goals.start_time, goals.end_time, goals.goal_length, studyGoalsUncompletedContainer);
+            }
+        }
+
+        if (studyGoalsLimitedContainer.children.length <= 0) {
+            populateGoalsPlaceholderMessages(studyGoalsLimitedContainer, "No limited goals yet")
+        }
+
+        if (studyGoalsUnlimitedContainer.children.length <= 0) {
+            populateGoalsPlaceholderMessages(studyGoalsUnlimitedContainer, "No unlimited goals yet")
+        }
+
+        if (studyGoalsCompletedContainer.children.length <= 0) {
+            populateGoalsPlaceholderMessages(studyGoalsCompletedContainer, "No completed goals yet")
+        }
+
+        if (studyGoalsUncompletedContainer.children.length <= 0) {
+            populateGoalsPlaceholderMessages(studyGoalsUncompletedContainer, "No uncompleted goals yet")
+        }
+    }
+}
+
+async function getStudyGoalsSummary() {
+    const userId = await getCurrentUserId();
+    const res = await fetch(`http://localhost:3000/users/${userId}/goals`, {
+        credentials: 'include'
+    })
+
+    const data = await res.json();
+
+    if (res.ok) {
+        recentGoalsSummary.innerHTML = "";
+        if (data.length === 0) {
+            let recentGoalName = document.createElement("p");
+            recentGoalName.textContent = "No goals"
+            recentGoalsSummary.appendChild(recentGoalName)
+        } else {
+            recentGoalsSummary.innerHTML = "";
+            for (const obj of data) {
+                if (obj.in_streak === true) {
+                    new createGoalsReminderCards(obj.id, obj.end_time, obj.completed, obj.goal_length, obj.goal_type)
+                }
+            }
+        }
+    }
+}
+
+cancelGoalBtn.addEventListener("click", () => {
+    timeframeOption = "";
+    goalTypeOption = "";
+    endTime = "";
+})
+
+saveGoalBtn.addEventListener("click", async () => {
+    const createGoalPageMessageBox = document.getElementById("createGoalPageMessageBox");
+    const startTime = new Date();
+
+    if (endTime === "" && timeframeOption !== "custom") {
+        if (timeframeOption === "daily") {
+            endTime = addToDate(startTime, 'daily');
+        } else if (timeframeOption === "weekly") {
+            endTime = addToDate(startTime, 'weekly');
+        } else if (timeframeOption === "monthly") {
+            endTime = addToDate(startTime, 'monthly');
+        } else if (timeframeOption === "yearly") {
+            endTime = addToDate(startTime, 'yearly');
+        }
+    }
+
+    if (timeframeOption === "" || goalTypeOption === "" || endTime === "") {
+        showMessageBox(createGoalPageMessageBox, "all selections must be completed");
+    } else {
+        await createStudyGoal();
+    }
+})
+
+function addToDate(date, timeframe) {
+    const result = new Date(date); // clone so we don't mutate the original
+  
+    switch (timeframe) {
+      case 'daily':
+        result.setDate(result.getDate() + 1);
+        break;
+      case 'weekly':
+        result.setDate(result.getDate() + 7);
+        break;
+      case 'monthly':
+        result.setMonth(result.getMonth() + 1);
+        break;
+      case 'yearly':
+        result.setFullYear(result.getFullYear() + 1);
+        break;
+      default:
+        throw new Error(`Unknown timeframe: ${timeframe}`);
+    }
+  
+    return result;
+  }
+
+async function createStudyGoal() {
+    let goal_length = (hours * 60) + minutes;
+    if (goalTypeOption === "notes_to_review") {
+        goal_length = noteCount;
+    } else if (goalTypeOption === "flashcards_to_review") {
+        goal_length = cardCount;
+    }
+    const userId = await getCurrentUserId()
+    const payload = {
+        goalTimeframe: timeframeOption,
+        goalType: goalTypeOption,
+        endTime: endTime,
+        goalLength: goal_length
+    }
+
+    const res = await fetch(`http://localhost:3000/users/${userId}/goals`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+    })
+
+    const createGoalPageMessageBox = document.getElementById("createGoalPageMessageBox");
+
+    const data = await res.json();
+
+    if (res.ok) { 
+        createStudyRepoBackBtn.classList.add("Hide");
+        showMessageBox(createGoalPageMessageBox, "created goal successfully, going back to home...");
+        timeframeOption = "";
+        goalTypeOption = "";
+        endTime = "";
+        setCurrentPage('goalsPage')
+        setTimeout(async () => await showCurrentPage(), 1000);
+    } else {
+        console.log(data.error)
+        showMessageBox(createGoalPageMessageBox, data.error || "Something went wrong");
+    }
+}
+
+function populateGoalsPlaceholderMessages(container, message) {
+    const placeholderMessageCon = document.createElement("div")
+    const placeholderMessage = document.createElement("p")
+    placeholderMessage.classList.add("placeholderMessageElements");
+    placeholderMessage.textContent = message;
+    placeholderMessageCon.appendChild(placeholderMessage)
+    container.appendChild(placeholderMessageCon)
+}
+
+function customGoalDatePicker () {
+    flatpickr("#end-date-picker", {
+        minDate: "today",        // can't pick a date before today
+        dateFormat: "Y-m-d",     // matches Postgres-friendly format
+        onChange: function(selectedDates, dateStr) {
+          endTime = dateStr;
+        }
+    });
 }
 
 async function getStudyRepo() {
@@ -1863,18 +2585,20 @@ async function getUserStats() {
 
     const data = await res.json();
 
+    console.log(data)
+
     if (res.ok) {
-        notesViewedToday.textContent = data.notes_today;
-        flashcardsViewedToday.textContent = data.flashcards_today;
+        notesViewedToday.textContent = data.main.notes_today;
+        flashcardsViewedToday.textContent = data.main.flashcards_today;
         currentStreak.innerHTML = "";
         totalHours.innerHTML = "";
         totalToday.innerHTML = "";
-        currentStreakValue.textContent = `${data.current_streak} days`;
-        const hours = data.total_seconds / 3600;
-        const todayHours = data.seconds_today / 3600
+        currentStreakValue.textContent = `${data.other.current_streak} days`;
+        const hours = data.main.total_seconds / 3600;
+        const todayHours = data.main.seconds_today / 3600
         console.log(hours, todayHours)
-        totalHoursValue.textContent = hours < 0.1 ? `${Math.round(data.total_seconds)}s` : hours.toFixed(1) + 'h';
-        totalTodayValue.textContent = todayHours < 0.1 ? `${Math.round(data.seconds_today)}s` : hours.toFixed(1) + 'h';
+        totalHoursValue.textContent = hours < 0.1 ? `${Math.round(data.main.total_seconds)}s` : hours.toFixed(1) + 'h';
+        totalTodayValue.textContent = todayHours < 0.1 ? `${Math.round(data.main.seconds_today)}s` : hours.toFixed(1) + 'h';
         currentStreak.appendChild(currentStreakLabel)
         currentStreak.appendChild(currentStreakValue)
         totalHours.appendChild(totalHoursLabel)
@@ -1932,7 +2656,11 @@ function displayData(rows) {
 
     const weekData = buildWeekData(rows);
 
-    new Chart(ctx, {
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: weekData.map(d => d.day),
@@ -2461,8 +3189,35 @@ function showMessageBox(messageBoxEl, message) {
     }, 2500)
 }
 
+function showSelectedGoalTypeStyle() { 
+    const goalDurationOrNumConLabel = document.getElementById("goalDurationOrNumConLabel");
+    const goals = [studyTimeGoal, notesToReviewGoal, flashcardsToReviewGoal];
+    const durationOrNum = [studyDurationContainer, numNotesContainer, numFlashcardsContainer];
+    goals.forEach(goal => {
+        goal.classList.remove("goalSelectedStyle");
+    })
+
+    durationOrNum.forEach(con => {
+        con.classList.add("Hide");
+    })
+
+    if (goalTypeOption === "study_time") {
+        goalDurationOrNumConLabel.textContent = "GOAL: STUDY DURATION";
+        studyTimeGoal.classList.add("goalSelectedStyle");
+        studyDurationContainer.classList.remove("Hide");
+    } else if (goalTypeOption === "notes_to_review") {
+        goalDurationOrNumConLabel.textContent = "GOAL: NOTES TO REVIEW";
+        notesToReviewGoal.classList.add("goalSelectedStyle");
+        numNotesContainer.classList.remove("Hide");
+    } else if (goalTypeOption === "flashcards_to_review") {
+        goalDurationOrNumConLabel.textContent = "GOAL: FLASHCARDS TO REVIEW";
+        flashcardsToReviewGoal.classList.add("goalSelectedStyle"); 
+        numFlashcardsContainer.classList.remove("Hide");
+    }
+}
+
 function hideAllPages() {
-    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper, addDocumentPageWrapper, studyRepoDocumentsPageWrapper, createFlashcardPageWrapper];
+    const Pages = [loginPageWrapper, registrationPageWrapper, homePageWrapper, settingsPageWrapper, studyReposPageWrapper, createStudyRepoPageWrapper, studyRepoPageWrapper, studyRepoNotePageWrapper, studyRepoFolderPageWrapper, addDocumentPageWrapper, studyRepoDocumentsPageWrapper, createFlashcardPageWrapper, goalsPageWrapper, createGoalPageWrapper];
     Pages.forEach(page => {
         page.classList.add("Hide");
     })
@@ -2495,7 +3250,8 @@ async function showCurrentPage() {
         await getReposSummary();
         await getDocumentsSummary();
         await getUserStats();
-        await  getUserAnalytics();
+        await getUserAnalytics();
+        await getStudyGoalsSummary();
     } else if (currentPage === "settingsPage") {
         settingsPageWrapper.classList.remove("Hide");
         await populateSettingsInfo()
@@ -2519,6 +3275,12 @@ async function showCurrentPage() {
         await getAllUserDocuments();
     } else if (currentPage === "addFlashcardPage") {
         createFlashcardPageWrapper.classList.remove("Hide");
+    } else if (currentPage === "goalsPage") {
+        goalsPageWrapper.classList.remove("Hide");
+        await getStudyGoals();
+    } else if (currentPage === "createGoalPage") {
+        createGoalPageWrapper.classList.remove("Hide");
+        showSelectedGoalTypeStyle();
     } else {
         loginPageWrapper.classList.remove("Hide");
     }

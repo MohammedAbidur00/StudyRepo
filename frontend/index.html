@@ -54,7 +54,7 @@
                 <div class="Top-Bar-Btns-Container">
                     <div>
                         <button id="openStudyReposBtn" class="Top-Bar-Btn">STUDY REPOS</button>
-                        <button class="Top-Bar-Btn">STUDY GOALS</button>
+                        <button id="openStudyGoals" class="Top-Bar-Btn">STUDY GOALS</button>
                         <button class="Top-Bar-Btn">SCHEDULE</button>
                         <button id="openDocumentsBtn" class="Top-Bar-Btn">DOCUMENTS</button>
                         <button class="Top-Bar-Btn">ANALYTICS</button>
@@ -111,7 +111,7 @@
                         <p>Nothing upcoming</p>
                     </div>
                 </div>
-                <div id="recentStudyBasesSum" class="Summary-Container">
+                <div id="recentStudyBasesSum" class="Summary-Container Summary-Container-Repo-Con">
                     <div class="Sumary-Container-Label">
                         <p>RECENT STUDY REPOS</p>
                     </div>
@@ -121,9 +121,7 @@
                     <div class="Sumary-Container-Label">
                         <p>GOALS REMINDER</p>
                     </div>
-                    <div class="Summary-Content">
-                        <p>No goals yet</p>
-                    </div>
+                    <div id="recentGoalsSummary" class="Summary-Content"></div>
                 </div>
             </div>
         </div>
@@ -435,6 +433,110 @@
                     <div class="Create-Repo-Btns-Container">
                         <button id="saveFlashcardBtn">SAVE</button>
                         <button id="cancelFlashcardBtn">CANCEL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="goalsPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="goalsBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>STUDY GOALS</h1>
+                    </div>
+                </div>
+                <div class="Top-Bar-Btns-Container">
+                    <div>
+                        <button id="addGoalBtn" class="Top-Bar-Btn">+ ADD GOAL</button>
+                        <button id="editGoalsBtn" class="Top-Bar-Btn">EDIT GOALS</button>
+                        <div id="goalsEditBtns" class="Hide">
+                            <button id="editGoalsCancelBtn" class="Top-Bar-Btn">CANCEL</button>
+                            <button id="editGoalsSelectBtn" class="Top-Bar-Btn">SELECT</button>
+                        </div>
+                        <button id="setStreakConditionBtn" class="Top-Bar-Btn">SET STREAK CONDITION</button>
+                        <button id="cancelStreakConditionBtn" class="Top-Bar-Btn Hide">CANCEL SET STREAK</button>
+                        <button id="confirmStreakConditionBtn" class="Top-Bar-Btn Hide">CONFIRM</button>
+                        <button class="Top-Bar-Btn material-icons">star</button>
+                    </div>
+                </div>
+            </div>
+            <div id="studyGoalsContentContainer" class="Page-Content"></div>
+        </div>
+        <div id="createGoalPageWrapper" class="Study-Repos-Page-Wrapper Hide">
+            <div class="Top-Bar">
+                <div class="Top-Bar-Header-Container">
+                    <div class="App-Label-Container">
+                        <button id="createGoalBackBtn" class="Header-Label-Btn">BACK</button>
+                    </div>
+                    <div class="Header-Page-Label-Container">
+                        <h1>CREATE GOAL</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="Create-Study-Repo-Content">
+                <div class="Create-Repo-Inputs-Containers">
+                    <div class="Create-Repo-Inputs-Container">
+                        <p class="createRepoLabel">GOAL TIMEFRAME</p>
+                        <div>
+                            <button id="dailyGoalBtn" class="Top-Bar-Btn">DAILY</button>
+                            <button id="weeklyGoalBtn" class="Top-Bar-Btn">WEEKLY</button>
+                            <button id="monthlyGoalBtn" class="Top-Bar-Btn">MONTHLY</button>
+                            <button id="yearlyGoalBtn" class="Top-Bar-Btn">YEARLY</button>
+                            <button id="customGoalBtn" class="Top-Bar-Btn">CUSTOM</button>
+                        </div>
+                        <div id="datePickerContainer" class="Hide">
+                            <input id="end-date-picker" type="text" placeholder="SELECT END DATE">
+                        </div>
+                    </div>
+                    <div class="Create-Repo-Inputs-Container">
+                        <p class="createRepoLabel">GOAL TYPE</p>
+                        <div>
+                            <button id="studyTimeGoal" class="Top-Bar-Btn">STUDY TIME</button>
+                            <button id="notesToReviewGoal" class="Top-Bar-Btn">NOTES TO REVIEW</button>
+                            <button id="flashcardsToReviewGoal" class="Top-Bar-Btn">FLASHCARDS TO REVIEW</button>
+                        </div>
+                    </div>
+                    <div class="Create-Repo-Inputs-Container">
+                        <p id="goalDurationOrNumConLabel" class="createRepoLabel">GOAL: STUDY DURATION</p>
+                        <div id="studyDurationContainer" class="duration-group">
+                            <div class="stepper">
+                              <button type="button" data-target="hours" data-amount="-1">−</button>
+                              <span id="hours">0</span>
+                              <label>hrs</label>
+                              <button type="button" data-target="hours" data-amount="1">+</button>
+                            </div>
+                            <div class="stepper">
+                              <button type="button" data-target="minutes" data-amount="-5">−</button>
+                              <span id="minutes">30</span>
+                              <label>min</label>
+                              <button type="button" data-target="minutes" data-amount="5">+</button>
+                            </div>
+                        </div>
+
+                        <div id="numNotesContainer" class="duration-group Hide">
+                            <div class="stepper">
+                                <button type="button" id="dec-notes">−</button>
+                                <span id="notes-value">5</span>
+                                <label>notes</label>
+                                <button type="button" id="inc-notes">+</button>
+                            </div>
+                        </div>
+
+                        <div id="numFlashcardsContainer" class="duration-group Hide">
+                            <div class="stepper">
+                                <button type="button" id="dec-cards">−</button>
+                                <span id="cards-value">20</span>
+                                <label>flashcards</label>
+                                <button type="button" id="inc-cards">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="createGoalPageMessageBox" class="Message-Box Hide"></div>
+                    <div class="Create-Repo-Btns-Container">
+                        <button id="saveGoalBtn">SAVE</button>
+                        <button id="cancelGoalBtn">CANCEL</button>
                     </div>
                 </div>
             </div>

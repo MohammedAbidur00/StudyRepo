@@ -91,7 +91,12 @@ const getUserStats = async (req, res) => {
       [id]
     )
 
-    res.status(200).json(result.rows[0])
+    const streak = await pool.query('SELECT * FROM userstats WHERE user_id = $1', [id])
+    if (streak.rows.length === 0) {
+      return res.status(404).json({ error: "Streak not found" })
+    }
+
+    res.status(200).json({main: result.rows[0], other: streak.rows[0]})
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: "Something went wrong" })
@@ -124,4 +129,67 @@ const getUserAnalytics = async (req, res) => {
   }
 }
 
-module.exports = { getUsers, getUser, createUser, updateUser, deleteUser, getUserStats, addUserStats, getUserAnalytics }
+const getGoals = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const user = await pool.query('SELECT id, username, email FROM users WHERE id = $1', [userId])
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" })
+    }
+    const result = await pool.query('SELECT * FROM usergoals WHERE user_id = $1', [userId])
+    if (result.rows.length === 0) {
+      return res.status(200).json(result.rows)
+    }
+    res.status(200).json(result.rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: "Something went wrong" })
+  }
+}
+
+const getGoal = async (req, res) => {
+  try {
+    const { goalId } = req.params
+    const result = await pool.query('SELECT * FROM usergoals WHERE id = $1', [goalId])
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Goal not found" })
+    }
+    res.status(200).json(result.rows[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: "Something went wrong" })
+  }
+}
+
+const createGoal = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const { goalTimeframe, goalType, endTime, goalLength} = req.body
+    const user = await pool.query('SELECT id, username, email FROM users WHERE id = $1', [userId])
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" })
+    }
+    const result = await pool.query('INSERT INTO usergoals (user_id, goal_timeframe, goal_type, end_time, goal_length) VALUES ($1, $2, $3, $4, $5) RETURNING *', [userId, goalTimeframe, goalType, endTime, goalLength])
+    res.status(201).json(result.rows[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: "Something went wrong" })
+  }
+}
+
+const updateGoalStreakStatus = async (req, res) => {
+  try {
+    const { goalId } = req.params
+    const { inStreak } = req.body
+    const result = await pool.query('UPDATE usergoals SET in_streak = $1 WHERE id = $2 RETURNING *', [inStreak, goalId])
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" })
+    }
+    res.status(201).json(result.rows[0])
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something wnet wrong" })
+  }
+}
+
+module.exports = { getUsers, getUser, createUser, updateUser, deleteUser, getUserStats, addUserStats, getUserAnalytics, getGoals, getGoal, createGoal , updateGoalStreakStatus}
